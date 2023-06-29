@@ -1,0 +1,56 @@
+{% load static %}
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+        <title>Recuperación</title>
+        <link rel="shortcut icon" type="image/png" href="{% static 'img/unam-ico.png' %}">
+        <link rel="stylesheet" type="text/css" href="{% static 'css/recovery.css' %}">
+        <link rel="stylesheet" href="{% static 'alertifyjs/css/alertify.min.css' %}" />
+        <link rel="stylesheet" href="{% static 'alertifyjs/css/themes/default.min.css' %}" />
+        <script src="{% static 'alertifyjs/alertify.min.js' %}"></script>
+    </head>
+    <body class="img" style="background-image: url('{% static "img/unam.png"%}')";>
+        <header>
+            <nav class="nav">
+                <div class="whitespace1"></div>
+                <a href="{% url 'index' %}">
+                    <img class="logo" src="{% static 'img/unam2.png' %}">
+                </a>
+                <div class="div-titulo"><h1 class="titulo">GPT-UNAM</h1></div>
+            </nav>
+        </header>
+        <div class="div-page">
+            <div class="div-form">
+                <div class="div-info">
+                    <h1>RECUPERACIÓN</h1>
+                    <form method="post">
+                        {% csrf_token %}
+                        <div class="ln-1">
+                            <input class="input" id="nc" type="number" name="nc" placeholder="NUMERO DE CUENTA">
+                        </div>
+                        <div class="ln-2">
+                            <input class="input" id="email" type="email" name="email" placeholder="CORREO">
+                        </div>
+                        <div class="ln-3">
+                            <input class="input" id="password" type="password" name="password" placeholder="NUEVA CONTRASEÑA">                            
+                        </div>
+                        <div class="ln-4">
+                            <a href="{% url 'login' %}" class="cancelar">REGRESAR</a>
+                            <button class="registro">RECUPERAR</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>       
+    </body>
+</html>
+
+{% if messages %}
+    <script>
+        {% for message in messages %}
+            alertify.{{ message.tags }}('{{ message }}');
+        {% endfor %}
+    </script>
+{% endif %}

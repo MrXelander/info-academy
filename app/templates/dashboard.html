@@ -1,0 +1,82 @@
+{% load static %}
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+        <title>Dashboard</title>
+        <link rel="shortcut icon" type="image/png" href="{% static 'img/unam-ico.png' %}">
+        <link rel="stylesheet" type="text/css" href="{% static 'css/dashboard.css' %}">
+        <script src="https://unpkg.com/@phosphor-icons/web"></script>
+        <link rel="stylesheet" href="{% static 'alertifyjs/css/alertify.min.css' %}" />
+        <link rel="stylesheet" href="{% static 'alertifyjs/css/themes/default.min.css' %}" />
+        <script src="{% static 'alertifyjs/alertify.min.js' %}"></script>
+    </head>
+    <body class="img" style="background-image: url('{% static "img/unam.png"%}')";>
+        <header>
+            <nav class="nav">
+                <div class="whitespace1"></div>
+                <a href="{% url 'dashboard' %}">
+                    <img class="logo" src="{% static 'img/unam2.png' %}">
+                </a>
+                <div class="div-titulo"><h1 class="titulo">GPT-UNAM</h1></div>
+                <div class="dropdown">
+                    <button class="dropbtn">
+                        Bienvenido, {{ short_name }}
+                        <span class="space"></span>
+                        <i class="ph-fill ph-user-square"></i>
+                    </button>
+                    <div class="dropdown-content">
+                        <a href="#">
+                            Editar cuenta
+                            <i class="ph-bold ph-pencil-simple-line"></i>
+                        </a>
+                        <a class="logout" href="{% url 'logout' %}" onclick="return confirmLogout()">
+                            Cerrar sesión
+                            <i class="ph-bold ph-sign-out"></i>
+                        </a>
+                    </div>
+                </div>
+            </nav>
+        </header>
+        <div class="div-page">
+            <div class="div-form">
+                <div class="div-container">
+                    <div class="div-info">
+                        <div class="materias-container">
+                            {% if materias %}
+                            {% for materia in materias %}
+                                <button class="materia-button">{{ materia.nombre }}</button>
+                            {% endfor %}
+                            {% else %}
+                            <p>No hay materias disponibles.</p>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>       
+    </body>
+</html>
+
+<script>
+function confirmLogout() {
+  alertify.confirm('Cerrar sesión', '¿Estás seguro de que deseas cerrar sesión?', function() {
+    // Redirigir al usuario a la página de logout
+    window.location.href = "{% url 'logout' %}";
+  }, function() {
+    // El usuario canceló el logout, no hacer nada
+  });
+  
+  // Evitar que el enlace se siga ejecutando inmediatamente
+  return false;
+}
+</script>
+
+{% if messages %}
+    <script>
+        {% for message in messages %}
+            alertify.{{ message.tags }}('{{ message }}');
+        {% endfor %}
+    </script>
+{% endif %}
