@@ -27,10 +27,26 @@
                         <i class="ph-fill ph-user-square"></i>
                     </button>
                     <div class="dropdown-content">
-                        <a href="#">
+                        <a href="{% url 'edit_account' %}">
                             Editar cuenta
                             <i class="ph-bold ph-pencil-simple-line"></i>
                         </a>
+                        {% if user.role == 'Administrador' or user.role == 'Profesor' or user.role == 'Estudiante' %}
+                        <a href="#">
+                            Agregar / editar materias
+                            <i class="ph-bold ph-notebook"></i>
+                        </a>
+                        <a href="#">
+                            Chat (Beta)
+                            <i class="ph-bold ph-chat-circle-dots"></i>
+                        </a>
+                        {% endif %}
+                        {% if user.role == 'Estudiante' %}
+                        <a href="#">
+                            Usuarios
+                            <i class="ph-bold ph-user-circle-gear"></i>
+                        </a>
+                        {% endif %}
                         <a class="logout" href="{% url 'logout' %}" onclick="return confirmLogout()">
                             Cerrar sesión
                             <i class="ph-bold ph-sign-out"></i>
@@ -43,6 +59,7 @@
             <div class="div-form">
                 <div class="div-container">
                     <div class="div-info">
+                        <h1>MATERIAS DISPONIBLES</h1>
                         <div class="materias-container">
                             {% if materias %}
                             {% for materia in materias %}

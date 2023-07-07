@@ -3,6 +3,18 @@ PROYECTO UNIVERSITARIO GPT-UNAM
 Consiste en realizar practicas para universitarios de la carrera de informatica y relacionadas, mediante el uso de diversas API's con Inteligencia Artificial, de manera automatizada, en donde los profesores suben los temas de cada una de sus materias, suben sus recursos adicionalmente a la plataforma y se almacenan en la base de datos.
 El proposito es solo crear practicas con introduccion, pasos, conclusiones e imagenes de referencia en pdf y diapositivas.
 
+En caso de fallar el entorno virtual se deben instalar algunos paquetes con los siguientes comandos:
+
+Django
+
+    $ python -m pip install Django
+
+MySQL Connector
+
+    $ pip install mysqlclient
+
+-----------
+
 REGISTRO DE CAMBIOS
 
 [230623]
@@ -24,3 +36,10 @@ REGISTRO DE CAMBIOS
 -Solo el dashboard sigue incompleto
 -Se agrego un proceso de encriptacion a las contraseñas
 -Se corrigieron errores en el modelo de usuario.
+
+[230707]
+-Ahora los campos del formulario de registro son obligatorios
+-Se aumenta la privacidad al quitar mensajes de compilacion durante el registro
+-Ahora es posible editar la cuenta de un usuario
+-Se agregaron 3 opciones nuevas en el dashboard, crear materias/temas, chat, crud de usuarios (para administrador), estas opciones de momento estan publicas pero en futuras actualizaciones el acceso solo sera para ciertos roles de usuario.
+-Se agregaron instrucciones al presente documento para la instalacion de librerias para poder compilar la pagina.

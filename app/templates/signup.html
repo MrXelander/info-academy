@@ -28,20 +28,18 @@
                     <form method="post">
                         {% csrf_token %}
                         <div class="ln-1">
-                            <input class="input" id="name" type="text" name="name" placeholder="NOMBRE(S)">
-                            <input class="input" id="lastname" type="text" name="lastname" placeholder="APELLIDOS">
+                            <input class="input" id="name" type="text" name="name" placeholder="NOMBRE(S)" required>
+                            <input class="input" id="lastname" type="text" name="lastname" placeholder="APELLIDOS" required>
                         </div>
                         <div class="ln-2">
-                            <input class="input" id="email" type="email" name="email" placeholder="CORREO">
-                            <input class="input" id="nc" type="number" name="nc" placeholder="NUMERO DE CUENTA">
+                            <input class="input" id="email" type="email" name="email" placeholder="CORREO" required>
+                            <input class="input" id="nc" type="number" name="nc" placeholder="NUMERO DE CUENTA" required>
                         </div>
                         <div class="ln-3">
-                            <select class="input" id="role" name="role" placeholder="">
+                            <select class="input" id="role" name="role" placeholder="" required>
                                 <option value="Estudiante" selected>Estudiante</option>
-                                <option value="Profesor">Profesor</option>
-                                <option value="Administrativo">Administrativo</option>
                             </select>
-                            <input class="input" id="password" type="password" name="password" placeholder="CONTRASEÑA">                            
+                            <input class="input" id="password" type="password" name="password" placeholder="CONTRASEÑA" required>                            
                         </div>
                         <div class="ln-4">
                             <a href="{% url 'index' %}" class="cancelar">REGRESAR</a>

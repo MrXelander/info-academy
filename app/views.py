@@ -20,11 +20,8 @@ def signup(request):
         role = request.POST['role']
         password = request.POST['password']
 
-        print("contraseña " + password)
         # Encriptar la contraseña con PBKDF2
-        hashed_password = make_password(password)
-        print("encriptada " + hashed_password)
-        
+        hashed_password = make_password(password)   
         try:
             usuario = CustomUser.objects.create_user(
                 email=email, 
@@ -99,3 +96,37 @@ def dashboard(request):
 def user_logout(request):
     logout(request)
     return redirect('login')
+
+@login_required(login_url='login')
+def edit_account(request):
+    user = request.user
+    context = {
+        'user': user,
+    }
+    if request.method == 'POST':
+        # Obtener los datos del formulario
+        first_name = request.POST['name']
+        last_name = request.POST['lastname']
+        email = request.POST['email']
+        nc = request.POST['nc']
+        password = request.POST['password']
+        
+        user.email=email
+        user.first_name=first_name
+        user.last_name=last_name
+        user.nc=nc
+        user.username=email
+        # Encriptar la contraseña con PBKDF2
+        if password:
+            hashed_password = make_password(password)
+            user.password=hashed_password
+
+        try:
+            user.save()
+            
+            messages.add_message(request, 70, 'Datos actualizados correctamente')
+            return redirect('dashboard')
+        except Exception as e:
+            messages.add_message(request, 90, 'Error al actualizar datos')
+            return redirect('dashboard')
+    return render(request, 'editaccount.html', context)
