@@ -33,13 +33,13 @@
                         </div>
                         <div class="ln-2">
                             <input class="input" id="email" type="email" name="email" placeholder="CORREO" value="{{ user.email }}" required>
-                            <input class="input" id="nc" type="number" name="nc" placeholder="NUMERO DE CUENTA" value="{{ user.nc }}" required>
+                            <input class="input" id="nc" type="number" name="nc" placeholder="NUMERO DE CUENTA" value="{{ user.nc }}" required disabled>
                         </div>
                         <div class="ln-3">
                             <select class="input" id="role" name="role" placeholder="" disabled>
                                 <option value="Estudiante" {% if user.role == 'Estudiante' %}selected{% endif %}>Estudiante</option>
                                 <option value="Profesor" {% if user.role == 'Profesor' %}selected{% endif %}>Profesor</option>
-                                <option value="Administrativo" {% if user.role == 'Administrativo' %}selected{% endif %}>Administrativo</option>
+                                <option value="Administrador" {% if user.role == 'Administrador' %}selected{% endif %}>Administrador</option>
                             </select>
                             <input class="input" id="password" type="password" name="password" placeholder="CONTRASEÑA">                            
                         </div>

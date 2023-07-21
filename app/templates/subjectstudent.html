@@ -1,0 +1,132 @@
+{% load static %}
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+        <title>Mis materias</title>
+        <link rel="shortcut icon" type="image/png" href="{% static 'img/unam-ico.png' %}">
+        <link rel="stylesheet" type="text/css" href="{% static 'css/users.css' %}">
+        <script src="https://unpkg.com/@phosphor-icons/web"></script>
+        <link rel="stylesheet" href="{% static 'alertifyjs/css/alertify.min.css' %}" />
+        <link rel="stylesheet" href="{% static 'alertifyjs/css/themes/default.min.css' %}" />
+        <script src="{% static 'alertifyjs/alertify.min.js' %}"></script>
+    </head>
+    <body class="img" style="background-image: url('{% static "img/unam.png"%}')";>
+        <header>
+            <nav class="nav">
+                <div class="whitespace1"></div>
+                <a href="{% url 'dashboard' %}">
+                    <img class="logo" src="{% static 'img/unam2.png' %}">
+                </a>
+                <div class="div-titulo"><h1 class="titulo">GPT-UNAM</h1></div>
+                <div class="dropdown">
+                    <button class="dropbtn">
+                        Bienvenido, {{ short_name }}
+                        <span class="space"></span>
+                        <i class="ph-fill ph-user-square"></i>
+                    </button>
+                    <div class="dropdown-content">
+                        <a href="{% url 'edit_account' %}">
+                            Editar cuenta
+                            <i class="ph-bold ph-pencil-simple-line"></i>
+                        </a>
+                        <a href="#">
+                            Chat (Beta)
+                            <i class="ph-bold ph-chat-circle-dots"></i>
+                        </a>
+                        {% if user.role == 'Administrador' %}
+                        <a href="{% url 'users' %}">
+                            Usuarios
+                            <i class="ph-bold ph-user-circle-gear"></i>
+                        </a>
+                        {% endif %}
+                        <a class="logout" href="{% url 'logout' %}" onclick="return confirmLogout()">
+                            Cerrar sesión
+                            <i class="ph-bold ph-sign-out"></i>
+                        </a>
+                    </div>
+                </div>
+            </nav>
+        </header>
+        <div class="div-page">
+            <div class="div-form">
+                <div class="div-info">
+                    <h1>MIS MATERIAS</h1>
+                    <div>
+                        <form method="post" id="my-form">
+                            {% csrf_token %}
+                            <input class="input" id="codigo_materia" name="codigo_materia" type="text" placeholder="Código de la materia" required>
+                            <button class="boton" type="submit">Inscribirse</button>
+                            <input type="hidden" id="nombre-materia" value="{{ materia.nombre }}">
+                            <input type="hidden" id="nombre-profesor" value="{{ materia.profesor.get_full_name }}">
+                        </form>                                                       
+                    </div>
+                    <table class="custom-table">
+                        <thead>
+                            <tr>
+                                <th>Materia</th>
+                                <th>Profesor</th>
+                                <th>Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for materia in materias %}
+                            <tr>
+                                <td>{{ materia.nombre }}</td>
+                                <td>{{ materia.profesor.first_name }} {{ materia.profesor.last_name }}</td>
+                                <td>
+                                    <a href="#" class="boton">Baja</a>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>                                                                                                   
+                </div>
+            </div>
+        </div>       
+    </body>
+</html>
+
+<script>
+    document.querySelector('#my-form').addEventListener('submit', function(event) {
+    event.preventDefault(); // Evita que el formulario se envíe de forma predeterminada
+
+    // Obtén los valores del nombre de la materia y el nombre del profesor
+    var nombreMateria = document.querySelector('#nombre-materia').value;
+    var nombreProfesor = document.querySelector('#nombre-profesor').value;
+
+    // Construye el mensaje de confirmación
+    var mensaje = `¿Estás seguro de inscribirte en la materia "${nombreMateria}" impartida por el profesor ${nombreProfesor}?`;
+
+    // Muestra el mensaje de confirmación en un alertify
+    alertify.confirm(mensaje, function() {
+    // Si el usuario confirma, envía el formulario
+    document.querySelector('#my-form').submit();
+    }, function() {
+    // Si el usuario cancela, no realiza ninguna acción
+    });
+    });
+</script>
+
+<script>
+function confirmLogout() {
+  alertify.confirm('Cerrar sesión', '¿Estás seguro de que deseas cerrar sesión?', function() {
+    // Redirigir al usuario a la página de logout
+    window.location.href = "{% url 'logout' %}";
+  }, function() {
+    // El usuario canceló el logout, no hacer nada
+  });
+  
+  // Evitar que el enlace se siga ejecutando inmediatamente
+  return false;
+}
+</script>
+
+{% if messages %}
+    <script>
+        {% for message in messages %}
+            alertify.{{ message.tags }}('{{ message }}');
+        {% endfor %}
+    </script>
+{% endif %}

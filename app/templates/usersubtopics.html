@@ -1,0 +1,118 @@
+{% load static %}
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+        <title>Lista de temas</title>
+        <link rel="shortcut icon" type="image/png" href="{% static 'img/unam-ico.png' %}">
+        <link rel="stylesheet" type="text/css" href="{% static 'css/usersubtopics.css' %}">
+        <script src="https://unpkg.com/@phosphor-icons/web"></script>
+        <link rel="stylesheet" href="{% static 'alertifyjs/css/alertify.min.css' %}" />
+        <link rel="stylesheet" href="{% static 'alertifyjs/css/themes/default.min.css' %}" />
+        <script src="{% static 'alertifyjs/alertify.min.js' %}"></script>
+    </head>
+    <body class="img" style="background-image: url('{% static "img/unam.png"%}')";>
+        <header>
+            <nav class="nav">
+                <div class="whitespace1"></div>
+                <a href="{% url 'dashboard' %}">
+                    <img class="logo" src="{% static 'img/unam2.png' %}">
+                </a>
+                <div class="div-titulo"><h1 class="titulo">GPT-UNAM</h1></div>
+                <div class="dropdown">
+                    <button class="dropbtn">
+                        Bienvenido, {{ short_name }}
+                        <span class="space"></span>
+                        <i class="ph-fill ph-user-square"></i>
+                    </button>
+                    <div class="dropdown-content">
+                        <a href="{% url 'edit_account' %}">
+                            Editar cuenta
+                            <i class="ph-bold ph-pencil-simple-line"></i>
+                        </a>
+                        {% if user.role == 'Administrador' or user.role == 'Profesor' %}
+                        <a href="{% url 'subjects' %}">
+                            Agregar / editar materias
+                            <i class="ph-bold ph-notebook"></i>
+                        </a>
+                        {% else %}
+                        <a href="{% url 'subjectstudent' %}">
+                            Inscribir materia
+                            <i class="ph-bold ph-notebook"></i>
+                        </a>
+                        {% endif %}
+                        <a href="#">
+                            Chat (Beta)
+                            <i class="ph-bold ph-chat-circle-dots"></i>
+                        </a>
+                        {% if user.role == 'Administrador' %}
+                        <a href="{% url 'users' %}">
+                            Usuarios
+                            <i class="ph-bold ph-user-circle-gear"></i>
+                        </a>
+                        {% endif %}
+                        <a class="logout" href="{% url 'logout' %}" onclick="return confirmLogout()">
+                            Cerrar sesión
+                            <i class="ph-bold ph-sign-out"></i>
+                        </a>
+                    </div>
+                </div>
+            </nav>
+        </header>
+        <div class="div-page">
+            <div class="div-form">
+                <div class="div-info">
+                    <h1>{{materia.nombre}}</h1>
+                    <h3>{{tema.nombre}}</h3>
+                    <div class="materias-container">
+                        {% if subtemas %}
+                          {% for subtema in subtemas %}
+                            <div class="dropdown-container">
+                              <a class="boton">{{ subtema.nombre }}</a>
+                              <div class="dropdown-list">
+                                <a class="dropdown-item" href="{% url 'practice' materia.id tema.id subtema.id %}">
+                                    Práctica
+                                    <i class="ph-bold ph-notebook"></i>
+                                </a>
+                                <a class="dropdown-item" href="{% url 'video' materia.id tema.id subtema.id %}">
+                                    Video
+                                    <i class="ph-bold ph-youtube-logo"></i>
+                                </a>
+                              </div>
+                            </div>
+                          {% endfor %}
+                        {% else %}
+                          <p>No hay subtemas disponibles.</p>
+                        {% endif %}
+                    </div>                      
+                    <div class="version-container">
+                        <a href="{% url 'subjectopic' materia.id %}" class="boton2">REGRESAR</a>
+                    </div>
+                </div>
+            </div>
+        </div>       
+    </body>
+</html>
+
+<script>
+function confirmLogout() {
+  alertify.confirm('Cerrar sesión', '¿Estás seguro de que deseas cerrar sesión?', function() {
+    // Redirigir al usuario a la página de logout
+    window.location.href = "{% url 'logout' %}";
+  }, function() {
+    // El usuario canceló el logout, no hacer nada
+  });
+  
+  // Evitar que el enlace se siga ejecutando inmediatamente
+  return false;
+}
+</script>
+
+{% if messages %}
+    <script>
+        {% for message in messages %}
+            alertify.{{ message.tags }}('{{ message }}');
+        {% endfor %}
+    </script>
+{% endif %}

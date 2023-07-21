@@ -55,6 +55,7 @@ header{
     display: flex;
     justify-content: center;
     align-items: center;
+    padding-top: 40px;
   }
   
 .div-form {
@@ -62,6 +63,7 @@ header{
     width: 95%;
     height: 85%;
     margin: auto;
+    border-radius: 30px;
 }
 
 .div-info {

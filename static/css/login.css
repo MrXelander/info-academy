@@ -62,6 +62,8 @@ header{
     width: 40%;
     height: 70%;
     margin: auto;
+    padding-top: 20px;
+    border-radius: 25px;
 }
 
 .div-info {

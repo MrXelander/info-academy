@@ -13,7 +13,6 @@ body{
 
 .img {
     background-size: cover;
-    background-repeat: repeat;
 }
     
 header{
@@ -49,30 +48,6 @@ header{
     font-weight: bold;
     color: #5B372D;
 }
-
-/*.dropdown{
-    display: flex;
-    height: 100%;
-    margin-left: auto;
-    margin-right: 30px;
-}
-
-.dropbtn{
-    margin-top: 5%;
-    font-family:sans-serif;
-    color: #000;
-    text-decoration: none;
-    font-size: 30px;
-    align-items: center;
-}
-
-.logout{
-    text-decoration: none;
-    font-size: 30px;
-    color:#000;
-    margin-top: 5%;
-    margin-left: 10px;
-}*/
 
 .dropdown {
     position: relative;
@@ -156,61 +131,90 @@ header{
       max-height: 500px;
     }
   }
-  
 
 .div-page {
     height: 100vh;
     display: flex;
     justify-content: center;
     align-items: center;
-  }
-
-.div-container {
-    display: flex;
-    justify-content: center;
-    align-items: flex-start;
+    padding-top: 35px;
 }
 
 .div-form {
     margin-top: 30%;
     background-color: rgba(255, 255, 255, 0.6);
     width: 95%;
-    height: 80%;
+    height: 85%;
     margin: auto;
+    border-radius: 30px;
 }
 
 .div-info {
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    height: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  align-items: center;
+  height: 100%;
+  overflow: auto;
+  overflow-y: scroll;
+  max-height: 100vh;
 }
 
-.boton{
-    align-items: center;
-    background-color: #ffffff;
-    border: 2px solid #000;
-    box-sizing: border-box;
-    color: #000000;
-    cursor: pointer;
-    display: inline-flex;
-    fill: #000;
-    font-family: Inter,sans-serif;
-    font-size: 24px;
-    font-weight: 600;
-    height: 48px;
-    justify-content: center;
-    letter-spacing: -.8px;
-    line-height: 24px;
-    min-width: 140px;
-    outline: 0;
-    padding: 0 50px;
-    text-align: center;
-    text-decoration: none;
-    transition: all .3s;
-    user-select: none;
-    -webkit-user-select: none;
-    touch-action: manipulation;
-    margin-left:50px;
+.div-info h1{
+  display: inline-block;
+  font-family: sans-serif;
+  font-size: 40px;
+  border-bottom: 3px solid black;
+}
+
+.materias-container {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  width: 90%;
+  padding-top: 60px;
+  padding-bottom: 50px;
+  grid-gap: 100px;
+  overflow: auto;
+  overflow-y: scroll;
+}
+
+.version-container {
+  position: sticky;
+  bottom: 0;
+  margin-top: auto;
+  padding-top: auto;
+}
+
+.version {
+  font-family: sans-serif;
+  font-size: 14px;
+}
+
+.boton {
+  align-items: center;
+  background-color: #ffffff;
+  border: 2px solid #ffffff;
+  box-sizing: border-box;
+  color: #000000;
+  cursor: pointer;
+  display: inline-flex;
+  fill: #000;
+  font-family: Inter, sans-serif;
+  font-size: 30px;
+  font-weight: 400;
+  height: 48px;
+  justify-content: center;
+  letter-spacing: -0.8px;
+  line-height: 24px;
+  min-width: 140px;
+  outline: 0;
+  padding: 40px 50px;
+  text-align: center;
+  text-decoration: none;
+  transition: all 0.3s;
+  user-select: none;
+  -webkit-user-select: none;
+  touch-action: manipulation;
+  border-radius: 10px;
+  margin-bottom: 15px;
 }

@@ -1,0 +1,60 @@
+{% load static %}
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+        <title>Editar usuario</title>
+        <link rel="shortcut icon" type="image/png" href="{% static 'img/unam-ico.png' %}">
+        <link rel="stylesheet" type="text/css" href="{% static 'css/signup.css' %}">
+        <link rel="stylesheet" href="{% static 'alertifyjs/css/alertify.min.css' %}" />
+        <link rel="stylesheet" href="{% static 'alertifyjs/css/themes/default.min.css' %}" />
+        <script src="{% static 'alertifyjs/alertify.min.js' %}"></script>
+    </head>
+    <body class="img" style="background-image: url('{% static "img/unam.png"%}')";>
+        <header>
+            <nav class="nav">
+                <div class="whitespace1"></div>
+                <a href="{% url 'index' %}">
+                    <img class="logo" src="{% static 'img/unam2.png' %}">
+                </a>
+                <div class="div-titulo"><h1 class="titulo">GPT-UNAM</h1></div>
+            </nav>
+        </header>
+        <div class="div-page">
+            <div class="div-form">
+                <div class="div-info">
+                    <h1>CREAR SUBTEMA</h1>
+                    <form method="post">
+                        {% csrf_token %}
+                        <div class="ln-1">
+                            <input class="input" id="nombre_subtema" type="text" name="nombre_subtema" placeholder="Nombre" required>
+                        </div>
+                        <div class="ln-2">
+                            <select class="input" id="tipo" name="tipo" placeholder="" required>
+                                <option value="Teórico" selected>Teórico</option>
+                                <option value="Práctico">Práctico</option>
+                                <option value="Mixto">Mixto</option>
+                            </select>
+                        </div>
+                        <div class="ln-3">
+                            <textarea class="input" id="descripcion" type="text" name="descripcion">Descripción</textarea>                           
+                        </div>
+                        <div class="ln-4">
+                            <a href="{% url 'subtopics' materia.id tema.id %}" class="cancelar">REGRESAR</a>
+                            <button class="registro">CREAR</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>       
+    </body>
+</html>
+
+{% if messages %}
+    <script>
+        {% for message in messages %}
+            alertify.{{ message.tags }}('{{ message }}');
+        {% endfor %}
+    </script>
+{% endif %}

@@ -31,18 +31,23 @@
                             Editar cuenta
                             <i class="ph-bold ph-pencil-simple-line"></i>
                         </a>
-                        {% if user.role == 'Administrador' or user.role == 'Profesor' or user.role == 'Estudiante' %}
-                        <a href="#">
+                        {% if user.role == 'Administrador' or user.role == 'Profesor' %}
+                        <a href="{% url 'subjects' %}">
                             Agregar / editar materias
                             <i class="ph-bold ph-notebook"></i>
                         </a>
+                        {% else %}
+                        <a href="{% url 'subjectstudent' %}">
+                            Inscribir materia
+                            <i class="ph-bold ph-notebook"></i>
+                        </a>
+                        {% endif %}
                         <a href="#">
                             Chat (Beta)
                             <i class="ph-bold ph-chat-circle-dots"></i>
                         </a>
-                        {% endif %}
-                        {% if user.role == 'Estudiante' %}
-                        <a href="#">
+                        {% if user.role == 'Administrador' %}
+                        <a href="{% url 'users' %}">
                             Usuarios
                             <i class="ph-bold ph-user-circle-gear"></i>
                         </a>
@@ -57,18 +62,19 @@
         </header>
         <div class="div-page">
             <div class="div-form">
-                <div class="div-container">
-                    <div class="div-info">
-                        <h1>MATERIAS DISPONIBLES</h1>
-                        <div class="materias-container">
-                            {% if materias %}
-                            {% for materia in materias %}
-                                <button class="materia-button">{{ materia.nombre }}</button>
-                            {% endfor %}
-                            {% else %}
-                            <p>No hay materias disponibles.</p>
-                            {% endif %}
-                        </div>
+                <div class="div-info">
+                    <h1>MATERIAS DISPONIBLES</h1>
+                    <div class="materias-container">
+                        {% if materias %}
+                        {% for materia in materias %}
+                            <a href="{% url 'subjectopic' materia.id %}" class="boton">{{ materia.nombre }}</a>
+                        {% endfor %}
+                        {% else %}
+                        <p>No hay materias disponibles.</p>
+                        {% endif %}
+                    </div>
+                    <div class="version-container">
+                        <p class="version">Versión 1.0</p>
                     </div>
                 </div>
             </div>

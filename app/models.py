@@ -1,3 +1,4 @@
+import uuid
 from django.db import models
 from django.contrib.auth.models import AbstractUser
 
@@ -31,6 +32,9 @@ class CustomUser(AbstractUser):
 
 class Materia(models.Model):
     nombre = models.CharField(max_length=100, unique=True)
+    codigo = models.UUIDField(default=uuid.uuid4, editable=False)
+    profesor = models.ForeignKey(CustomUser, on_delete=models.CASCADE)
+    alumnos = models.ManyToManyField(CustomUser, related_name='materias_inscritas', blank=True, default="")
 
     def __str__(self):
         return self.nombre
@@ -38,6 +42,15 @@ class Materia(models.Model):
 class Tema(models.Model):
     materia = models.ForeignKey(Materia, on_delete=models.CASCADE)
     nombre = models.CharField(max_length=100, unique=True)
+
+    def __str__(self):
+        return self.nombre
+    
+class Subtema(models.Model):
+    tema = models.ForeignKey(Tema, on_delete=models.CASCADE)
+    nombre = models.CharField(max_length=100)
+    descripcion = models.CharField(max_length=200, default="")
+    tipo = models.CharField(max_length=50, choices=[('Teórico', 'Teórico'), ('Práctico', 'Práctico'), ('Mixto', 'Mixto')])
 
     def __str__(self):
         return self.nombre
