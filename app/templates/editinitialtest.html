@@ -1,0 +1,101 @@
+{% load static %}
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+        <title>Test Inicial</title>
+        <link rel="shortcut icon" type="image/png" href="{% static 'img/unam-ico.png' %}">
+        <link rel="stylesheet" type="text/css" href="{% static 'css/initialtest.css' %}">
+        <link rel="stylesheet" href="{% static 'alertifyjs/css/alertify.min.css' %}" />
+        <link rel="stylesheet" href="{% static 'alertifyjs/css/themes/default.min.css' %}" />
+        <script src="{% static 'alertifyjs/alertify.min.js' %}"></script>
+    </head>
+    <body class="img" style="background-image: url('{% static "img/unam.png"%}')";>
+        <header>
+            <nav class="nav">
+                <div class="whitespace1"></div>
+                <a href="{% url 'index' %}">
+                    <img class="logo" src="{% static 'img/unam2.png' %}">
+                </a>
+                <div class="div-titulo"><h1 class="titulo">GPT-UNAM</h1></div>
+            </nav>
+        </header>
+        <div class="div-page">
+            <div class="div-form">
+                <div class="div-info">
+                    <h1>Completa el cuestionario</h1>
+                    <form method="post">
+                        {% csrf_token %}
+                        <div class="ln">
+                            <label for="nivel_experiencia">Nivel de programación</label>
+                            <select class="input" id="nivel_experiencia" name="nivel_experiencia">
+                                <option value="Principiante" {% if cuestionario.nivel_experiencia == "('Principiante',)" %}selected{% endif %}>Principiante</option>
+                                <option value="Intermedio" {% if cuestionario.nivel_experiencia == "('Intermedio',)" %}selected{% endif %}>Intermedio</option>
+                                <option value="Avanzado" {% if cuestionario.nivel_experiencia == "('Avanzado',)" %}selected{% endif %}>Avanzado</option>
+                            </select>
+                        </div>
+                        <div class="ln">
+                            <label for="estilo_aprendizaje">Tipo de aprendizaje preferido</label>
+                            <select class="input" id="estilo_aprendizaje" name="estilo_aprendizaje">
+                                <option value="Visual" {% if cuestionario.estilo_aprendizaje == "('Visual',)" %}selected{% endif %}>Visual</option>
+                                <option value="Auditivo" {% if cuestionario.estilo_aprendizaje == "('Auditivo',)" %}selected{% endif %}>Auditivo</option>
+                                <option value="Kinestésico" {% if cuestionario.estilo_aprendizaje == "('Kinestésico',)" %}selected{% endif %}>Kinestésico</option>
+                            </select>
+                        </div>
+                        <div class="ln">
+                            <label for="contenido_preferido">Contenido preferido</label>
+                            <select class="input" id="contenido_preferido" name="contenido_preferido">
+                                <option value="Videos" {% if cuestionario.contenido_preferido == "('Videos',)" %}selected{% endif %}>Videos</option>
+                                <option value="Lecturas" {% if cuestionario.contenido_preferido == "('Lecturas',)" %}selected{% endif %}>Lecturas</option>
+                                <option value="Prácticas" {% if cuestionario.contenido_preferido == "('Prácticas',)" %}selected{% endif %}>Prácticas</option>
+                            </select>                            
+                        </div>
+                        <div class="ln">
+                            <label for="horarios_estudio">Horario de estudio</label>
+                            <select class="input" id="horarios_estudio" name="horarios_estudio">
+                                <option value="Mañana" {% if cuestionario.horarios_estudio == "('Mañana',)" %}selected{% endif %}>Mañana</option>
+                                <option value="Tarde" {% if cuestionario.horarios_estudio == "('Tarde',)" %}selected{% endif %}>Tarde</option>
+                                <option value="Noche" {% if cuestionario.horarios_estudio == "('Noche',)" %}selected{% endif %}>Noche</option>
+                            </select>                            
+                        </div>
+                        <div class="ln">
+                            <label for="duracion_sesiones">Sesiones (duración)</label>
+                            <select class="input" id="duracion_sesiones" name="duracion_sesiones">
+                                <option value="Cortas" {% if cuestionario.duracion_sesiones == "('Cortas',)" %}selected{% endif %}>Cortas</option>
+                                <option value="Moderadas" {% if cuestionario.duracion_sesiones == "('Moderadas',)" %}selected{% endif %}>Moderadas</option>
+                                <option value="Largas" {% if cuestionario.duracion_sesiones == "('Largas',)" %}selected{% endif %}>Largas</option>
+                            </select>                            
+                        </div>
+                        <div class="ln">
+                            <label for="formato_evaluacion">Evaluaciones preferidas</label>
+                            <select class="input" id="formato_evaluacion" name="formato_evaluacion">
+                                <option value="Cuestionarios" {% if cuestionario.formato_evaluacion == "('Cuestionarios',)" %}selected{% endif %}>Cuestionarios</option>
+                                <option value="Proyectos" {% if cuestionario.formato_evaluacion == "('Proyectos',)" %}selected{% endif %}>Proyectos</option>
+                                <option value="Discusiones" {% if cuestionario.formato_evaluacion == "('Discusiones',)" %}selected{% endif %}>Discusiones</option>
+                            </select>                            
+                        </div>
+                        <div class="ln">
+                            <label for="switch">**Recibir recomendaciones</label>
+                            <label class="switch">
+                                <input type="checkbox" id="recibir_recomendaciones" name="recibir_recomendaciones">
+                                <span class="slider round"></span>
+                              </label>
+                        </div>
+                        <div class="ln">
+                            <button class="registro">Enviar</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>       
+    </body>
+</html>
+
+{% if messages %}
+    <script>
+        {% for message in messages %}
+            alertify.{{ message.tags }}('{{ message }}');
+        {% endfor %}
+    </script>
+{% endif %}

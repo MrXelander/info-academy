@@ -9,6 +9,7 @@ body{
     margin: 0px;
     padding: 0px;
     box-sizing: border-box;
+    overflow: hidden;
 }
 
 .img {
@@ -46,7 +47,7 @@ header{
     vertical-align:middle;
     font-family:sans-serif;
     font-weight: bold;
-    color: #5B372D;
+    color: #000000;
 }
 
 .dropdown {
@@ -97,7 +98,7 @@ header{
     background-color: #f9f9f9;
     min-width: 160px;
     box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
-    z-index: 1;
+    z-index: 3;
   }
   
   .dropdown-content a {
@@ -142,7 +143,6 @@ header{
 
 .div-form {
     margin-top: 30%;
-    background-color: rgba(255, 255, 255, 0.6);
     width: 95%;
     height: 85%;
     margin: auto;
@@ -163,15 +163,16 @@ header{
 .div-info h1{
   display: inline-block;
   font-family: sans-serif;
+  color: #875C40;
   font-size: 40px;
-  border-bottom: 3px solid black;
+  border-bottom: 3px solid #875C40;
 }
 
 .materias-container {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
   width: 90%;
-  padding-top: 60px;
+  padding-top: 10px;
   padding-bottom: 50px;
   grid-gap: 100px;
   overflow: auto;
@@ -190,12 +191,11 @@ header{
   font-size: 14px;
 }
 
-.boton {
+/*.boton {
   align-items: center;
-  background-color: #ffffff;
-  border: 2px solid #ffffff;
+  border: 2px solid #000000;
   box-sizing: border-box;
-  color: #000000;
+  color: #fff;
   cursor: pointer;
   display: inline-flex;
   fill: #000;
@@ -217,4 +217,129 @@ header{
   touch-action: manipulation;
   border-radius: 10px;
   margin-bottom: 15px;
+}*/
+
+.materia{
+  width: 100%;
+  height: 300px;
+  padding-bottom: 20px;
 }
+
+.materia-info{
+  position: relative;
+  height: 100px;
+  border-radius: 20px 20px 0px 0px;
+}
+
+.materia-info i{
+  position:absolute;
+  font-size: 100px;
+  top: 50px;
+  right: 10px;
+}
+
+.materia-nombre{
+  font-family: monospace;
+  text-decoration: none;
+  color: #fff;
+  font-size: 26px;
+}
+
+.materia-nombrep{
+  text-align: center;
+  height: 36px;
+  padding-top: 10px;
+  width: 95%;
+}
+
+.materia-profesor{
+  font-family: sans-serif;
+  padding-top: 10px;
+  padding-left: 10px;
+  color: #dedede;
+}
+
+.materia-info.uno{
+  background-color: #3C3F3E;
+}
+
+.materia-info.dos{
+  background-color: #CEA47C;
+}
+
+.materia-info.tres{
+  background-color: #6D8FA3;
+}
+
+.materia-info.cuatro{
+  background-color: #875C40;
+}
+
+.materia-info.cinco{
+  background-color: #96B2B7;
+}
+
+.materia-p{
+  background-color: #ffffffd9;
+  height: 200px;
+  border-radius: 0px 0px 20px 20px;
+}
+
+ /* The sidepanel menu */
+ .sidepanel {
+  height: 500px; /* Specify a height */
+  width: 0px; /* 0 width - change this with JavaScript */
+  position: fixed; /* Stay in place */
+  z-index: 1; /* Stay on top */
+  top: 100px;
+  right: 0;
+  background-color: #111; /* Black*/
+  overflow-x: hidden; /* Disable horizontal scroll */
+  padding-top: 60px; /* Place content 60px from the top */
+  transition: 0.5s; /* 0.5 second transition effect to slide in the sidepanel */
+}
+
+.sidepanel a {
+  color: #818181;
+  padding: 24px 16px;
+  text-decoration: none;
+  font-size: 28px;
+  display: block;
+  transition: 0.3s;
+}
+/* The sidepanel links */
+.a {
+  padding: 8px 8px 8px 32px;
+  text-decoration: none;
+  font-size: 25px;
+  display: block;
+  transition: 0.3s;
+}
+
+/* When you mouse over the navigation links, change their color */
+.sidepanel a:hover {
+  color: #f1f1f1;
+}
+
+/* Position and style the close button (top right corner) */
+.sidepanel .closebtn {
+  position: absolute;
+  top: 0;
+  right: 25px;
+  font-size: 36px;
+  margin-left: 50px;
+}
+
+/* Style the button that is used to open the sidepanel */
+.openbtn {
+  font-size: 20px;
+  cursor: pointer;
+  background-color: #111;
+  color: white;
+  border: 0;
+  position: right;
+}
+
+.openbtn:hover {
+  background-color: #444;
+} 

@@ -9,6 +9,7 @@ class CustomUser(AbstractUser):
     nc = models.CharField(max_length=10, unique=True)
     role = models.CharField(max_length=50)
     password = models.CharField(max_length=128)
+    initial_test= models.BooleanField(default=False)
     
     is_active = models.BooleanField(default=True)
     is_staff = models.BooleanField(default=False)
@@ -29,6 +30,61 @@ class CustomUser(AbstractUser):
     def get_short_name(self):
         names = self.first_name.split()
         return names[0] if names else ''
+    
+class CuestionarioInicial(models.Model):
+    user = models.OneToOneField(CustomUser, on_delete=models.CASCADE)
+    nivel_experiencia = models.CharField(
+        max_length=20,
+        choices=[
+            ('Principiante', 'Principiante'),
+            ('Intermedio', 'Intermedio'),
+            ('Avanzado', 'Avanzado')
+        ]
+    )
+    estilo_aprendizaje = models.CharField(
+        max_length=20,
+        choices=[
+            ('Visual', 'Visual'),
+            ('Auditivo', 'Auditivo'),
+            ('Kinestésico', 'Kinestésico')
+        ]
+    )
+    contenido_preferido = models.CharField(
+        max_length=20,
+        choices=[
+            ('Videos', 'Videos'),
+            ('Lecturas', 'Lecturas'),
+            ('Prácticas', 'Prácticas')
+        ]
+    )
+    horarios_estudio = models.CharField(
+        max_length=20,
+        choices=[
+            ('Mañana', 'Mañana'),
+            ('Tarde', 'Tarde'),
+            ('Noche', 'Noche')
+        ]
+    )
+    duracion_sesiones = models.CharField(
+        max_length=20,
+        choices=[
+            ('Cortas', 'Cortas'),
+            ('Moderadas', 'Moderadas'),
+            ('Largas', 'Largas')
+        ]
+    )
+    formato_evaluacion = models.CharField(
+        max_length=20,
+        choices=[
+            ('Cuestionarios', 'Cuestionarios'),
+            ('Proyectos', 'Proyectos'),
+            ('Discusiones', 'Discusiones')
+        ]
+    )
+    recibir_recomendaciones = models.BooleanField(default=True)
+
+    def __str__(self):
+        return f"Cuestionario de {self.user.username}"
 
 class Materia(models.Model):
     nombre = models.CharField(max_length=100, unique=True)

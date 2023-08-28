@@ -245,6 +245,7 @@ header{
   border-collapse: collapse;
   font-family: monospace;
   font-size: 24px;
+  margin-bottom: 20px;
 }
 
 .custom-table th,

@@ -6,20 +6,20 @@ from django.contrib.auth import logout
 from django.contrib.auth import authenticate, login as auth_login
 from django.contrib.auth.decorators import login_required, user_passes_test
 from django.contrib import messages
-from app.models import CustomUser, Materia, Tema, Subtema
+from app.models import CustomUser, Materia, Tema, Subtema, CuestionarioInicial
 from django.contrib.auth.hashers import make_password
 from gptunam import settings
 from pytube import Search, extract
 
 def index(request):
     if request.user.is_authenticated:
-        return redirect('dashboard')
+        return redirect('initialtest')
 
     return render(request, 'index.html')
 
 def signup(request):
     if request.user.is_authenticated:
-        return redirect('dashboard')
+        return redirect('initialtest')
 
     if request.method == 'POST':
         # Obtener los datos del formulario
@@ -51,7 +51,7 @@ def signup(request):
 
 def login(request):
     if request.user.is_authenticated:
-        return redirect('dashboard')
+        return redirect('initialtest')
 
     if request.method == 'POST':
         username = request.POST.get('email')
@@ -102,7 +102,11 @@ def es_profesor(user):
 @login_required(login_url='login')
 def dashboard(request):
     user = request.user
+    if not user.initial_test:
+        return redirect('initialtest')
+
     short_name = user.get_short_name()
+    colores_disponibles = ['uno', 'dos', 'tres', 'cuatro', 'cinco']
     if user.role == 'Administrador' or user.role == 'Profesor':
         materias = Materia.objects.all()
     else:
@@ -111,8 +115,82 @@ def dashboard(request):
         'user': user,
         'short_name': short_name,
         'materias': materias,
+        'colores': colores_disponibles,
     }
     return render(request, 'dashboard.html', context)
+
+@login_required(login_url='login')
+def initialtest(request):
+    user = request.user
+    if user.initial_test:
+        return redirect('dashboard')
+    
+    if request.method == 'POST':
+        nivel_experiencia = request.POST.get('nivel_experiencia', '')
+        estilo_aprendizaje = request.POST.get('estilo_aprendizaje', '')
+        contenido_preferido = request.POST.get('contenido_preferido', '')
+        horarios_estudio = request.POST.get('horarios_estudio', '')
+        duracion_sesiones = request.POST.get('duracion_sesiones', '')
+        formato_evaluacion = request.POST.get('formato_evaluacion', '')
+        recibir_recomendaciones = request.POST.get('recibir_recomendaciones', False)
+        try:
+            cuestionario = CuestionarioInicial.objects.create(
+                user=user,
+                nivel_experiencia=nivel_experiencia,
+                estilo_aprendizaje=estilo_aprendizaje,
+                contenido_preferido=contenido_preferido,
+                horarios_estudio=horarios_estudio,
+                duracion_sesiones=duracion_sesiones,
+                formato_evaluacion=formato_evaluacion,
+                recibir_recomendaciones=recibir_recomendaciones
+            )
+            cuestionario.save()
+            user.initial_test = True
+            user.save()
+            messages.add_message(request, 70, 'Cuestionario guardado correctamente')
+            return redirect('dashboard')
+        except Exception as e:
+            messages.add_message(request, 90, 'Error al guardar cuestionario')
+            return redirect('initialtest')
+    return render(request, 'initialtest.html')
+
+@login_required(login_url='login')
+def editinitialtest(request):
+    user = request.user
+    if not user.initial_test:
+        return redirect('initialtest')
+    cuestionario = CuestionarioInicial.objects.get(user=user)
+    print(cuestionario.estilo_aprendizaje)
+    print(cuestionario.estilo_aprendizaje == 'Visual')
+    context = {
+        'user': user,
+        'cuestionario': cuestionario,
+    }
+    if request.method == 'POST':
+        nivel_experiencia = request.POST.get('nivel_experiencia', '')
+        estilo_aprendizaje = request.POST.get('estilo_aprendizaje', '')
+        contenido_preferido = request.POST.get('contenido_preferido', '')
+        horarios_estudio = request.POST.get('horarios_estudio', '')
+        duracion_sesiones = request.POST.get('duracion_sesiones', '')
+        formato_evaluacion = request.POST.get('formato_evaluacion', '')
+        recibir_recomendaciones = request.POST.get('recibir_recomendaciones', False)
+
+        cuestionario.nivel_experiencia=nivel_experiencia
+        cuestionario.estilo_aprendizaje=estilo_aprendizaje
+        cuestionario.contenido_preferido=contenido_preferido
+        cuestionario.horarios_estudio=horarios_estudio
+        cuestionario.duracion_sesiones=duracion_sesiones
+        cuestionario.formato_evaluacion=formato_evaluacion
+        cuestionario.recibir_recomendaciones=recibir_recomendaciones
+        try:
+            cuestionario.save()
+            messages.add_message(request, 70, 'Datos actualizados correctamente')
+            return redirect('dashboard')
+        except Exception as e:
+            print(e)
+            messages.add_message(request, 90, 'Error al actualizar datos')
+            return redirect('dashboard')
+    return render(request, 'editinitialtest.html', context)
 
 @login_required(login_url='login')
 def user_logout(request):

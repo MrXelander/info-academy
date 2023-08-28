@@ -5,7 +5,7 @@
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
         <title>Dashboard</title>
-        <link rel="shortcut icon" type="image/png" href="{% static 'img/unam-ico.png' %}">
+        <link rel="shortcut icon" type="image/png" href="{% static 'img/unam2.png' %}">
         <link rel="stylesheet" type="text/css" href="{% static 'css/dashboard.css' %}">
         <script src="https://unpkg.com/@phosphor-icons/web"></script>
         <link rel="stylesheet" href="{% static 'alertifyjs/css/alertify.min.css' %}" />
@@ -21,53 +21,62 @@
                 </a>
                 <div class="div-titulo"><h1 class="titulo">GPT-UNAM</h1></div>
                 <div class="dropdown">
-                    <button class="dropbtn">
+                    <button class="dropbtn" onclick="openNav()">
                         Bienvenido, {{ short_name }}
                         <span class="space"></span>
                         <i class="ph-fill ph-user-square"></i>
                     </button>
-                    <div class="dropdown-content">
-                        <a href="{% url 'edit_account' %}">
-                            Editar cuenta
-                            <i class="ph-bold ph-pencil-simple-line"></i>
-                        </a>
-                        {% if user.role == 'Administrador' or user.role == 'Profesor' %}
-                        <a href="{% url 'subjects' %}">
-                            Agregar / editar materias
-                            <i class="ph-bold ph-notebook"></i>
-                        </a>
-                        {% else %}
-                        <a href="{% url 'subjectstudent' %}">
-                            Inscribir materia
-                            <i class="ph-bold ph-notebook"></i>
-                        </a>
-                        {% endif %}
-                        <a href="#">
-                            Chat (Beta)
-                            <i class="ph-bold ph-chat-circle-dots"></i>
-                        </a>
-                        {% if user.role == 'Administrador' %}
-                        <a href="{% url 'users' %}">
-                            Usuarios
-                            <i class="ph-bold ph-user-circle-gear"></i>
-                        </a>
-                        {% endif %}
-                        <a class="logout" href="{% url 'logout' %}" onclick="return confirmLogout()">
-                            Cerrar sesión
-                            <i class="ph-bold ph-sign-out"></i>
-                        </a>
-                    </div>
                 </div>
             </nav>
         </header>
         <div class="div-page">
+            <div id="mySidepanel" class="sidepanel">
+                <a href="javascript:void(0)" class="closebtn" onclick="closeNav()">&times;</a>
+                <a href="{% url 'edit_account' %}">
+                    Editar cuenta
+                    <i class="ph-bold ph-pencil-simple-line"></i>
+                </a>
+                {% if user.role == 'Administrador' or user.role == 'Profesor' %}
+                <a href="{% url 'subjects' %}">
+                    Agregar / editar materias
+                    <i class="ph-bold ph-notebook"></i>
+                </a>
+                {% else %}
+                <a href="{% url 'subjectstudent' %}">
+                    Inscribir materia
+                    <i class="ph-bold ph-notebook"></i>
+                </a>
+                {% endif %}
+                <a href="#">
+                    Chat (Beta)
+                    <i class="ph-bold ph-chat-circle-dots"></i>
+                </a>
+                {% if user.role == 'Administrador' %}
+                <a href="{% url 'users' %}">
+                    Usuarios
+                    <i class="ph-bold ph-user-circle-gear"></i>
+                </a>
+                {% endif %}
+                <a class="logout" href="{% url 'logout' %}" onclick="return confirmLogout()">
+                    Cerrar sesión
+                    <i class="ph-bold ph-sign-out"></i>
+                </a>
+            </div>
             <div class="div-form">
                 <div class="div-info">
-                    <h1>MATERIAS DISPONIBLES</h1>
                     <div class="materias-container">
                         {% if materias %}
                         {% for materia in materias %}
-                            <a href="{% url 'subjectopic' materia.id %}" class="boton">{{ materia.nombre }}</a>
+                            <div class="materia">
+                                <div class="materia-info {{ colores|random }}">
+                                    <p class="materia-nombrep"><a href="{% url 'subjectopic' materia.id %}" class="materia-nombre">{{ materia.nombre }}</a></p>
+                                    <p class="materia-profesor">{{ materia.profesor.first_name }} {{ materia.profesor.last_name }}</p>
+                                    <i class="ph-duotone ph-user-circle"></i>
+                                </div>
+                                <div class="materia-p">
+                                    
+                                </div>
+                            </div>
                         {% endfor %}
                         {% else %}
                         <p>No hay materias disponibles.</p>
@@ -94,6 +103,16 @@ function confirmLogout() {
   // Evitar que el enlace se siga ejecutando inmediatamente
   return false;
 }
+
+/* Set the width of the sidebar to 250px (show it) */
+function openNav() {
+  document.getElementById("mySidepanel").style.width = "250px";
+}
+
+/* Set the width of the sidebar to 0 (hide it) */
+function closeNav() {
+  document.getElementById("mySidepanel").style.width = "0";
+} 
 </script>
 
 {% if messages %}
