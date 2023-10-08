@@ -6,10 +6,13 @@ from django.contrib.auth import logout
 from django.contrib.auth import authenticate, login as auth_login
 from django.contrib.auth.decorators import login_required, user_passes_test
 from django.contrib import messages
-from app.models import CustomUser, Materia, Tema, Subtema, CuestionarioInicial
+from app.models import CustomUser, Materia, Tema, Subtema, SubtemaDoc, CuestionarioInicial, Evaluacion, Pregunta
 from django.contrib.auth.hashers import make_password
 from gptunam import settings
 from pytube import Search, extract
+from django.http import HttpResponse
+
+version="beta(231008)"
 
 def index(request):
     if request.user.is_authenticated:
@@ -116,7 +119,20 @@ def dashboard(request):
         'short_name': short_name,
         'materias': materias,
         'colores': colores_disponibles,
+        'version': version,
     }
+    if request.method == 'POST' and es_profesor(user):
+        nombre = request.POST['nombre_materia']
+        profesor = user
+
+        if nombre:
+            try:
+                materia = Materia.objects.create(nombre=nombre, profesor=profesor)
+                messages.add_message(request, 70, 'Materia creada exitosamente.')
+                return redirect('dashboard')
+            except Exception as e:
+                messages.add_message(request, 90, 'Error al crear materia')
+                return redirect('dashboard')
     return render(request, 'dashboard.html', context)
 
 @login_required(login_url='login')
@@ -266,7 +282,7 @@ def delete_subject(request, materia_id):
         messages.add_message(request, 70, 'Materia eliminada exitosamente.')
     except Exception as e:
         messages.add_message(request, 90, 'Error al eliminar materia')
-    return redirect('subjects')
+    return redirect('dashboard')
 
 @login_required(login_url='login')
 def topics(request, materia_id):
@@ -307,7 +323,7 @@ def delete_topic(request, materia_id, tema_id):
         messages.add_message(request, 70, 'Tema eliminado exitosamente.')
     except Exception as e:
         messages.add_message(request, 90, 'Error al eliminar tema')
-    return redirect('topics', materia_id=materia.id)
+    return redirect('subjectopic', codigo=materia.codigo)
 
 @login_required(login_url='login')
 def subtopics(request, materia_id, tema_id):
@@ -349,6 +365,74 @@ def new_subtopic(request, materia_id, tema_id):
                 messages.add_message(request, 90, 'Error al crear subtema')
                 return redirect('subtopics', materia_id=materia_id, tema_id=tema.id)
     return render(request, 'newsubtopic.html', context)
+
+@user_passes_test(es_profesor, login_url='login')
+def addsubtopic(request, codigo, tema_id):
+    materia = get_object_or_404(Materia, codigo=codigo)
+    tema = get_object_or_404(Tema, id=tema_id)
+    context = {
+        'materia': materia,
+        'tema': tema,
+    }
+    if request.method == 'POST':
+        nombre = request.POST['nombre_subtema']
+        tipo = request.POST['tipo']
+        descripcion = request.POST['descripcion']
+
+        if nombre and tipo:
+            try:
+                subtema = Subtema.objects.create(nombre=nombre, tema=tema, tipo=tipo, descripcion=descripcion)
+                if tipo == "Material didáctico":
+                    uploaded_file = request.FILES.get('file')
+                    if uploaded_file:
+                        try:
+                            subtema_doc = SubtemaDoc(subtema=subtema, file=uploaded_file)
+                            subtema_doc.save()
+                            messages.add_message(request, 70, 'Actividad creada exitosamente.')
+                            return redirect('subjectopic', codigo=codigo)
+                        except Exception as E:
+                            messages.add_message(request, 90, 'Error al guardar el archivo')
+                            return redirect('subjectopic', codigo=codigo)
+                if tipo == "Evaluación":
+                    tipo_evaluacion = request.POST['tipo_evaluacion']
+                    try:
+                        evaluacion = Evaluacion(subtema=subtema,tipo=tipo_evaluacion)
+                        evaluacion.save()
+                    except Exception as E:
+                        messages.add_message(request, 90, 'Error al crear evaluacion')
+                        return redirect('subjectopic', codigo=codigo)
+                    
+                    preguntas = request.POST.getlist('preg[]')
+                    respuestas_correctas = request.POST.getlist('correcta[]')
+                    opciones_a = request.POST.getlist('opc_a[]')
+                    opciones_b = request.POST.getlist('opc_b[]')
+                    opciones_c = request.POST.getlist('opc_c[]')
+
+                    if len(preguntas) == len(respuestas_correctas) == len(opciones_a) == len(opciones_b) == len(opciones_c):
+                        try:
+                            for i in range(len(preguntas)):
+                                pregunta = Pregunta.objects.create(
+                                    evaluacion=evaluacion,
+                                    preg=preguntas[i],
+                                    correcta=respuestas_correctas[i],
+                                    opc_a=opciones_a[i],
+                                    opc_b=opciones_b[i],
+                                    opc_c=opciones_c[i]
+                                )
+                                pregunta.save()
+
+                            messages.add_message(request, 70, 'Actividad y preguntas creadas exitosamente.')
+                            return redirect('subjectopic', codigo=codigo)
+                        except Exception as e:
+                            messages.add_message(request, 90, 'Error al crear actividad o preguntas')
+                            return redirect('subjectopic', codigo=codigo)
+                    else:
+                        messages.add_message(request, 90, 'La cantidad de preguntas y respuestas no coincide')
+                        return redirect('subjectopic', codigo=codigo)
+            except Exception as e:
+                messages.add_message(request, 90, 'Error al crear actividad')
+                return redirect('subjectopic', codigo=codigo)
+    return render(request, 'addsubtopic.html', context)
 
 @user_passes_test(es_profesor, login_url='login')
 def edit_subtopic(request, tema_id, subtema_id):
@@ -462,17 +546,69 @@ def edit_user(request, user_id):
     return render(request, 'edituser.html', {'user': user})
 
 @login_required(login_url='login')
-def subjectopic(request, materia_id):
-    materia = get_object_or_404(Materia, id=materia_id)
+def subjectopic(request, codigo):
+    materia = get_object_or_404(Materia, codigo=codigo)
     temas = Tema.objects.filter(materia=materia)
     user = request.user
     short_name = user.get_short_name()
+    colores_disponibles = ['uno', 'dos', 'tres', 'cuatro', 'cinco']
+    is_registered = materia.alumnos.filter(id=user.id).exists()
+    permiso = es_profesor(user) or (user.role=='Estudiante' and is_registered)
     context = {
         'materia': materia,
         'temas': temas,
         'short_name': short_name,
+        'colores': colores_disponibles,
+        'user': user,
+        'is_registered': is_registered,
+        'permiso': permiso,
+        'version': version,
     }
+    if request.method == 'POST':
+        nombre = request.POST['nombre_tema']
+
+        if nombre:
+            try:
+                tema = Tema.objects.create(nombre=nombre, materia=materia)
+                messages.add_message(request, 70, 'Tema creado exitosamente.')
+                return redirect('subjectopic', codigo=codigo)
+            except Exception as e:
+                print(e)
+                messages.add_message(request, 90, 'Error al crear tema')
+                return redirect('subjectopic', codigo=codigo)
     return render(request, 'subjectopic.html', context)
+
+@login_required(login_url='login')
+def inscripcion(request, codigo):
+    user = request.user
+    materia = get_object_or_404(Materia, codigo=codigo)
+
+    if request.user.role != 'Estudiante':
+        messages.error(request, "Solo los estudiantes pueden registrarse en esta materia.")
+        return redirect('subjectopic', codigo=codigo)
+
+    if materia.alumnos.filter(id=user.id).exists():
+            messages.add_message(request, 90, 'Ya estás inscrito en esta materia')
+            return redirect('dashboard')
+
+    # Inscribir al alumno en la materia
+    materia.alumnos.add(user)
+    materia.save()
+    messages.add_message(request, 70, 'Inscripción exitosa')
+    return redirect('dashboard')
+
+def baja(request, codigo):
+    user = request.user
+    materia = get_object_or_404(Materia, codigo=codigo)
+
+    if request.user.role != 'Estudiante':
+        messages.error(request, "Solo los estudiantes pueden registrarse en esta materia.")
+        return redirect('dashboard')
+    
+    if materia.alumnos.filter(id=request.user.id).exists():
+        materia.alumnos.remove(request.user)
+        messages.add_message(request, 70, "Te has dado de baja de la materia con éxito.")
+    return redirect('dashboard')
 
 @login_required(login_url='login')
 def usersubtopics(request, materia_id, tema_id):
@@ -533,10 +669,10 @@ def buscar_video(query):
     else:
         return None
 
-def video(request, materia_id, tema_id, subtema_id):
+def video(request, codigo, tema_id, subtema_id):
     user = request.user
     short_name = user.get_short_name()
-    materia = get_object_or_404(Materia, id=materia_id)
+    materia = get_object_or_404(Materia, codigo=codigo)
     tema = get_object_or_404(Tema, id=tema_id)
     subtema = get_object_or_404(Subtema, id=subtema_id)
     video_url = buscar_video(subtema.nombre + " " + tema.nombre)
@@ -549,3 +685,59 @@ def video(request, materia_id, tema_id, subtema_id):
         'video_url': video_url,
     }
     return render(request, 'video.html', context)
+
+@login_required(login_url='login')
+def document(request, codigo, tema_id, subtema_id):
+    user = request.user
+    short_name = user.get_short_name()
+    materia = get_object_or_404(Materia, codigo=codigo)
+    tema = get_object_or_404(Tema, id=tema_id)
+    subtema = get_object_or_404(Subtema, id=subtema_id)
+    subtema_doc = subtema.subtemadoc_set.first()
+    print(subtema_doc.id)
+    context = {
+        'materia': materia,
+        'tema': tema,
+        'short_name': short_name,
+        'subtema': subtema,
+        'subtema_doc': subtema_doc,
+    }
+    return render(request, 'document.html', context)
+
+@login_required(login_url='login')
+def openpdf(request, codigo, tema_id, subtema_id, doc_id):
+    # Obtener el objeto SubtemaDoc asociado al subtema
+    subtema_doc = get_object_or_404(SubtemaDoc, id=doc_id)
+
+    # Obtener el nombre del archivo PDF y la ruta al archivo
+    pdf_filename = subtema_doc.name
+    pdf_file_path = subtema_doc.file.path
+
+    # Abrir y leer el archivo PDF
+    with open(pdf_file_path, 'rb') as pdf_file:
+        response = HttpResponse(pdf_file.read(), content_type='application/pdf')
+        response['Content-Disposition'] = f'inline; filename="{pdf_filename}"'
+        
+        # Configurar el encabezado X-Frame-Options para permitir la incrustación en iframes
+        response['X-Frame-Options'] = 'SAMEORIGIN'
+
+        return response
+    
+@login_required(login_url='login')
+def evaluationq(request, codigo, tema_id, subtema_id):
+    user = request.user
+    short_name = user.get_short_name()
+    materia = get_object_or_404(Materia, codigo=codigo)
+    tema = get_object_or_404(Tema, id=tema_id)
+    subtema = get_object_or_404(Subtema, id=subtema_id)
+    evaluacion = Evaluacion.objects.filter(subtema=subtema).first()
+    preguntas = Pregunta.objects.filter(evaluacion=evaluacion)
+    context = {
+        'materia': materia,
+        'tema': tema,
+        'short_name': short_name,
+        'subtema': subtema,
+        'evaluacion': evaluacion,
+        'preguntas': preguntas,
+    }
+    return render(request, 'evaluationq.html', context)

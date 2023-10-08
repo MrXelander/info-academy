@@ -48,3 +48,12 @@ REGISTRO DE CAMBIOS
 -En la vista de los subtemas se puede elegir entre generar un video relacionado al azar, atraves de youtube y generar una practica con inteligencia artificial mediante la API de OpenAI (para esta funcionalidad es necesario poner tu API KEY en settings.py).
 -El modulo de chat aun no funciona.
 -Es la primer version que puede usar un usuario final, aunque aun esta en beta, las funciones escenciales estan listas para su uso.
+
+[231008]
+-Se cambiaron algunas vistas para hacer la interfaz mas llamativa e intuitiva.
+-Aunque se cambiaron algunas vistas, no se ha eliminado ninguna hasta terminar la fase beta.
+-Se agregaron modelos para mejorar la experiencia y funcionalidad de la plataforma.
+-Los modelos creados funcionaran para poder registrar mejores estadisticas para lograr los objetivos.
+-Se agrego una vista para el chat (aun sin funcionalidad).
+-Se agrego una encuesta inicial para entender las preferencias de aprendizaje del usuario.
+-Se planea remover la api de chatgpt para comenzar a usar llama de meta.

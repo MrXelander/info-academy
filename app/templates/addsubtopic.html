@@ -1,0 +1,140 @@
+{% load static %}
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+        <title>Editar usuario</title>
+        <link rel="shortcut icon" type="image/png" href="{% static 'img/unam2.png' %}">
+        <link rel="stylesheet" type="text/css" href="{% static 'css/addsubtopic.css' %}">
+        <link rel="stylesheet" href="{% static 'alertifyjs/css/alertify.min.css' %}" />
+        <link rel="stylesheet" href="{% static 'alertifyjs/css/themes/default.min.css' %}" />
+        <script src="{% static 'alertifyjs/alertify.min.js' %}"></script>
+    </head>
+    <body class="img" style="background-image: url('{% static "img/unam.png"%}')";>
+        <header>
+            <nav class="nav">
+                <div class="whitespace1"></div>
+                <a href="{% url 'index' %}">
+                    <img class="logo" src="{% static 'img/unam2.png' %}">
+                </a>
+                <div class="div-titulo"><h1 class="titulo">Info-Academy</h1></div>
+            </nav>
+        </header>
+        <div class="div-page">
+            <div class="div-form">
+                <div class="div-info">
+                    <h1>Agregar actividad</h1>
+                    <form method="post" enctype="multipart/form-data">
+                        {% csrf_token %}
+                        <div class="formulario-container">
+                            <div class="ln-1">
+                                <input class="input" id="nombre_subtema" type="text" name="nombre_subtema" placeholder="Nombre" required>
+                            </div>
+                            <div class="ln-2">
+                                <select class="input" id="tipo" name="tipo" placeholder="" required>
+                                    <option value="Material didáctico" selected>Material didáctico</option>
+                                    <option value="Evaluación">Evaluación</option>
+                                    <option value="Video">Video</option>
+                                </select>
+                            </div>
+                            <div class="ln-1">
+                                <textarea class="input" id="descripcion" type="text" name="descripcion">Descripción</textarea>                  
+                            </div>
+                            <div class="ln-1" id="material_didactico" style="display: none;">
+                                <input type="file" name="file" accept="application/pdf,application/vnd.ms-excel,application/msword">
+                            </div>
+                            <div class="ln-1" id="evaluacion" style="display: none;">
+                                <select class="input" name="tipo_evaluacion" id="tipo_evaluacion">
+                                    <option value="Cuestionarios">Cuestionario</option>
+                                    <option value="Proyectos">Proyecto</option>
+                                </select>
+                            </div>
+                            <div class="ln-1" id="video" style="display: none;">
+                                <label for="enlace_video" style="font-family: monospace; font-size: 24px;">https://www.youtube.com/watch?v=</label>
+                                <input class="input" type="text" name="enlace_video" placeholder="Deja vacio para generar automaticamente">
+                            </div>
+                            <div class="ln-5" id="preguntas_cuestionario" style="display: none;">
+                                <div class="pregunta">
+                                    <input type="text" name="preg[]" class="input" placeholder="Pregunta" required>
+                                    <input type="text" name="correcta[]" class="input" placeholder="Respuesta correcta" required>
+                                    <input type="text" name="opc_a[]" class="input" placeholder="Opcion A" required>
+                                    <input type="text" name="opc_b[]" class="input" placeholder="Opcion B" required>
+                                    <input type="text" name="opc_c[]" class="input" placeholder="Opcion C" required>
+                                    <button type="button" class="eliminar_pregunta">Eliminar</button>
+                                </div>
+                            </div>                            
+                            <button id="agregar_pregunta" style="display: none;">Agregar Pregunta</button>
+                        </div>
+                        <div class="ln-4">
+                            <a href="{% url 'subjectopic' materia.codigo %}" class="cancelar">REGRESAR</a>
+                            <button class="registro">CREAR</button>
+                        </div>
+                    </form>
+                </div>                
+            </div>
+        </div>       
+    </body>
+</html>
+
+{% if messages %}
+    <script>
+        {% for message in messages %}
+            alertify.{{ message.tags }}('{{ message }}');
+        {% endfor %}
+    </script>
+{% endif %}
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script>
+    $(document).ready(function() {
+        $("#tipo").change(function() {
+            var selectedOption = $(this).val();
+            $("#material_didactico").hide();
+            $("#evaluacion").hide();
+            $("#video").hide();
+            $("#preguntas_cuestionario").hide();
+            $("#agregar_pregunta").hide();
+            
+            if (selectedOption === "Material didáctico") {
+                $("#material_didactico").show();
+            } else if (selectedOption === "Evaluación") {
+                $("#evaluacion").show();
+            } else if (selectedOption === "Video") {
+                $("#video").show();
+            }
+        });
+    
+        $(document).on("change", "#tipo_evaluacion", function() {
+            var selectedOption = $(this).val();
+            $("#material_didactico").hide();
+            $("#preguntas_cuestionario").hide();
+            $("#video").hide();
+            $("#agregar_pregunta").hide();
+    
+            if (selectedOption === "Cuestionarios") {
+                $("#preguntas_cuestionario").show();
+                $("#agregar_pregunta").show();
+            }
+        });
+    
+        $("#agregar_pregunta").click(function() {
+            var preguntaHTML = `
+                <div class="pregunta">
+                    <input type="text" name="preg[]" class="input" placeholder="Pregunta" required>
+                    <input type="text" name="correcta[]" class="input" placeholder="Respuesta correcta" required>
+                    <input type="text" name="opc_a[]" class="input" placeholder="Opcion A" required>
+                    <input type="text" name="opc_b[]" class="input" placeholder="Opcion B" required>
+                    <input type="text" name="opc_c[]" class="input" placeholder="Opcion C" required>
+                    <button type="button" class="eliminar_pregunta">Eliminar</button>
+                </div>
+            `;
+    
+            $("#preguntas_cuestionario").append(preguntaHTML);
+        });
+    
+        $("#preguntas_cuestionario").on("click", ".eliminar_pregunta", function() {
+            $(this).parent().remove();
+        });
+    });
+</script>    

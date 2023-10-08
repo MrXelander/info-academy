@@ -95,6 +95,9 @@ class Materia(models.Model):
     def __str__(self):
         return self.nombre
     
+    def is_user_registered(self, user):
+        return self.alumnos.filter(id=user.id).exists()
+    
 class Tema(models.Model):
     materia = models.ForeignKey(Materia, on_delete=models.CASCADE)
     nombre = models.CharField(max_length=100, unique=True)
@@ -106,7 +109,39 @@ class Subtema(models.Model):
     tema = models.ForeignKey(Tema, on_delete=models.CASCADE)
     nombre = models.CharField(max_length=100)
     descripcion = models.CharField(max_length=200, default="")
-    tipo = models.CharField(max_length=50, choices=[('Teórico', 'Teórico'), ('Práctico', 'Práctico'), ('Mixto', 'Mixto')])
+    tipo = models.CharField(max_length=50, choices=[('Material didáctico', 'Material didáctico'), ('Evaluación', 'Evaluación'), ('Video', 'Video')])
+
+    def __str__(self):    
+        return self.nombre
+    
+class SubtemaDoc(models.Model):
+    subtema = models.ForeignKey(Subtema, on_delete=models.CASCADE)
+    name = models.CharField(max_length=100, null=True, blank=True)
+    file = models.FileField(upload_to='docs/')
+
+    def __str__(self):    
+        return self.name
+
+class Evaluacion(models.Model):
+    subtema = models.ForeignKey(Subtema, on_delete=models.CASCADE)
+    tipo = models.CharField(max_length=50, choices=[('Cuestionarios', 'Cuestionarios'), ('Proyectos', 'Proyectos'), ('Discusiones', 'Discusiones')])
+
+class Pregunta(models.Model):
+    evaluacion = models.ForeignKey(Evaluacion, on_delete=models.CASCADE)
+    preg = models.CharField(max_length=100)
+    correcta = models.CharField(max_length=100)
+    opc_a = models.CharField(max_length=100)
+    opc_b = models.CharField(max_length=100)
+    opc_c = models.CharField(max_length=100)
+
+class Calificacion(models.Model):
+    evaluacion = models.ForeignKey(Evaluacion, on_delete=models.CASCADE)
+    alumno = models.ForeignKey(CustomUser, on_delete=models.CASCADE)
+
+class RegistroTiempo(models.Model):
+    alumno = models.ForeignKey(CustomUser, on_delete=models.CASCADE)
+    subtema = models.ForeignKey(Subtema, on_delete=models.CASCADE)
+    tiempo_dedicado = models.PositiveIntegerField(default=0)  # Puedes ajustar el tipo de campo según tus necesidades
 
     def __str__(self):
-        return self.nombre
+        return f"Registro de tiempo para {self.alumno} en {self.subtema}"

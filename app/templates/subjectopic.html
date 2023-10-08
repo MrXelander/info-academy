@@ -4,8 +4,8 @@
     <head>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-        <title>Lista de temas</title>
-        <link rel="shortcut icon" type="image/png" href="{% static 'img/unam-ico.png' %}">
+        <title>Dashboard</title>
+        <link rel="shortcut icon" type="image/png" href="{% static 'img/unam2.png' %}">
         <link rel="stylesheet" type="text/css" href="{% static 'css/subjectopic.css' %}">
         <script src="https://unpkg.com/@phosphor-icons/web"></script>
         <link rel="stylesheet" href="{% static 'alertifyjs/css/alertify.min.css' %}" />
@@ -19,63 +19,130 @@
                 <a href="{% url 'dashboard' %}">
                     <img class="logo" src="{% static 'img/unam2.png' %}">
                 </a>
-                <div class="div-titulo"><h1 class="titulo">GPT-UNAM</h1></div>
+                <div class="div-titulo"><h1 class="titulo">Info-Academy</h1></div>
                 <div class="dropdown">
-                    <button class="dropbtn">
+                    <button class="dropbtn" onclick="openNav()">
                         Bienvenido, {{ short_name }}
                         <span class="space"></span>
                         <i class="ph-fill ph-user-square"></i>
                     </button>
-                    <div class="dropdown-content">
-                        <a href="{% url 'edit_account' %}">
-                            Editar cuenta
-                            <i class="ph-bold ph-pencil-simple-line"></i>
-                        </a>
-                        {% if user.role == 'Administrador' or user.role == 'Profesor' %}
-                        <a href="{% url 'subjects' %}">
-                            Agregar / editar materias
-                            <i class="ph-bold ph-notebook"></i>
-                        </a>
-                        {% else %}
-                        <a href="{% url 'subjectstudent' %}">
-                            Inscribir materia
-                            <i class="ph-bold ph-notebook"></i>
-                        </a>
-                        {% endif %}
-                        <a href="#">
-                            Chat (Beta)
-                            <i class="ph-bold ph-chat-circle-dots"></i>
-                        </a>
-                        {% if user.role == 'Administrador' %}
-                        <a href="{% url 'users' %}">
-                            Usuarios
-                            <i class="ph-bold ph-user-circle-gear"></i>
-                        </a>
-                        {% endif %}
-                        <a class="logout" href="{% url 'logout' %}" onclick="return confirmLogout()">
-                            Cerrar sesión
-                            <i class="ph-bold ph-sign-out"></i>
-                        </a>
-                    </div>
                 </div>
             </nav>
         </header>
         <div class="div-page">
+            <div id="mySidepanel" class="sidepanel">
+                <a href="javascript:void(0)" class="closebtn" onclick="closeNav()">&times;</a>
+                <a href="{% url 'edit_account' %}">
+                    Editar cuenta
+                    <i class="ph-bold ph-pencil-simple-line"></i>
+                </a>
+                {% if user.role == 'Administrador' or user.role == 'Profesor' %}
+                <a href="{% url 'subjects' %}">
+                    Agregar / editar materias
+                    <i class="ph-bold ph-notebook"></i>
+                </a>
+                {% else %}
+                <a href="{% url 'subjectstudent' %}">
+                    Inscribir materia
+                    <i class="ph-bold ph-notebook"></i>
+                </a>
+                {% endif %}
+                <a href="#">
+                    Chat (Beta)
+                    <i class="ph-bold ph-chat-circle-dots"></i>
+                </a>
+                {% if user.role == 'Administrador' %}
+                <a href="{% url 'users' %}">
+                    Usuarios
+                    <i class="ph-bold ph-user-circle-gear"></i>
+                </a>
+                {% endif %}
+                <a class="logout" href="{% url 'logout' %}" onclick="return confirmLogout()">
+                    Cerrar sesión
+                    <i class="ph-bold ph-sign-out"></i>
+                </a>
+            </div>
             <div class="div-form">
                 <div class="div-info">
-                    <h1>LISTA DE TEMAS</h1>
-                    <h3>{{materia.nombre}}</h3>
+                    <h1>{{ materia.nombre }}</h1>
+                    {% if user.role == 'Administrador' or user.role == 'Profesor' %}
+                    <button class="add" onclick="openAdd()">+</button>
+                    <div class="div-add" id="div-add">
+                        <a href="javascript:void(0)" class="close" onclick="closeAdd()">&times;</a>
+                        <form method="post">
+                            {% csrf_token %}
+                            <input class="input" id="nombre_tema" name="nombre_tema" type="text" id placeholder="Nombre del modulo" required>
+                            <div>
+                                <button class="boton" type="submit">Crear</button>
+                            </div>
+                        </form>
+                    </div>
+                    {% endif %}
+                    {% if user.role == 'Estudiante' %}
+                        {% if not is_registered %}
+                            <a href="{% url 'inscripcion' materia.codigo %}" class="inscribirse">Inscribirse</a>
+                        {% endif %}
+                    {% endif %}
                     <div class="materias-container">
                         {% if temas %}
-                        {% for tema in temas %}
-                            <a href="{% url 'usersubtopics' materia.id tema.id %}" class="boton">{{ tema.nombre }}</a>
-                        {% endfor %}
+                            {% if permiso %}
+                            {% for tema in temas %}
+                                <div class="materia">
+                                    <div class="materia-info {{ colores|random }}">
+                                        <div class="nom">
+                                            <p class="materia-nombrep">{{ tema.nombre }}</p>
+                                            {% if user.role == 'Administrador' or user.role == 'Profesor' %}
+                                            <i class="ph-fill ph-dots-three-outline-vertical" onclick="openOpc({{ tema.id }})"></i>
+                                            <div id="myPanelOpc{{ tema.id }}" class="materia-detail">
+                                                <a href="{% url 'addsubtopic' materia.codigo tema.id %}">
+                                                    <i class="ph ph-file-plus"></i>
+                                                    Agregar actividad
+                                                </a>     
+                                                <a href="#" onclick="confirmDelete({{ tema.id }}, {{ materia.id }})"">
+                                                    <i class="ph ph-trash"></i>
+                                                    Eliminar
+                                                </a>                              
+                                            </div>
+                                            {% endif %}
+                                        </div>
+                                    </div>
+                                    <div class="materia-p">
+                                        {% if tema.subtema_set.all %}
+                                        {% for subtema in tema.subtema_set.all %}
+                                            {% if subtema.tipo == 'Material didáctico' %}
+                                                <a href="{% url 'document' materia.codigo tema.id subtema.id %}" class="subtema"><i class="ph ph-notebook"></i> {{ subtema.nombre }}</a>
+                                            {% elif subtema.tipo == 'Evaluación' %}
+                                                <a href="{% url 'evaluationq' materia.codigo tema.id subtema.id %}" class="subtema"><i class="ph ph-list-checks"></i>{{ subtema.nombre }}</a>
+                                            {% elif subtema.tipo == 'Video' %}
+                                                <a href="{% url 'video' materia.codigo tema.id subtema.id %}" class="subtema"><i class="ph ph-video"></i> {{ subtema.nombre }}</a>
+                                            {% endif %}
+                                        {% endfor %}
+                                        {% else %}
+                                        <p class="p-content">Aun no hay contenido</p>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                            {% endfor %}
+                            {% else %}
+                                <p>No tiene permiso</p>
+                            {% endif %}
                         {% else %}
-                        <p>No hay temas disponibles.</p>
+                            <p>No hay temas disponibles.</p>
                         {% endif %}
                     </div>
+                    <div id="myPanelRobot" class="panelrobot">
+                        <div class="bot-top">
+                            <p><i class="ph-duotone ph-robot"></i></p>
+                            <h2>Chatbot</h2>
+                            <a href="javascript:void(0)" class="close" onclick="closeBot()">&times;</a>
+                        </div>
+                        <div class="bot-chat">
+                            <p> Hola soy un robot</p>
+                        </div>
+                    </div>
+                    <div class="chatbot" onclick="openBot()"><p><i class="ph-duotone ph-robot"></i></p></div>
                     <div class="version-container">
-                        <a href="{% url 'dashboard' %}" class="boton2">REGRESAR</a>
+                        <p class="version">Versión {{ version }}</p>
                     </div>
                 </div>
             </div>
@@ -94,6 +161,61 @@ function confirmLogout() {
   
   // Evitar que el enlace se siga ejecutando inmediatamente
   return false;
+}
+
+/* Set the width of the sidebar to 250px (show it) */
+function openNav() {
+    if(document.getElementById("mySidepanel").style.width == "250px")
+    {
+        document.getElementById("mySidepanel").style.width = "0px";
+    }else{
+        document.getElementById("mySidepanel").style.width = "250px";
+    }
+}
+
+function openBot() {
+    if(document.getElementById("myPanelRobot").style.width == "400px"){
+        document.getElementById("myPanelRobot").style.width = "0";
+    }else{
+        document.getElementById("myPanelRobot").style.width = "400px";
+    }
+}
+
+function openAdd() {
+    if(document.getElementById("div-add").style.width == "400px"){
+        document.getElementById("div-add").style.width = "0";
+    }else{
+        document.getElementById("div-add").style.width = "400px";
+    }
+}
+
+function openOpc(temaId) {
+    var panelOpc = document.getElementById("myPanelOpc" + temaId);
+    if (panelOpc.style.display == "block") {
+        panelOpc.style.display = "none";
+    } else {
+        panelOpc.style.display = "block";
+    }
+}
+
+function closeNav() {
+  document.getElementById("mySidepanel").style.width = "0";
+} 
+
+function closeBot() {
+  document.getElementById("myPanelRobot").style.width = "0";
+}
+
+function closeAdd() {
+  document.getElementById("div-add").style.width = "0";
+}
+
+function confirmDelete(temaId, materiaId) {
+  alertify.confirm("¿Estás seguro de que deseas eliminar este tema?", function () {
+    window.location.href = "/subjects/" + materiaId + "/topics/delete/" + temaId + "/";
+  }, function () {
+    alertify.warning('Eliminación cancelada');
+  });
 }
 </script>
 

@@ -91,47 +91,6 @@ header{
   .dropbtn i {
     font-size: 50px;
   }
-  
-  .dropdown-content {
-    display: none;
-    position: absolute;
-    background-color: #f9f9f9;
-    min-width: 160px;
-    box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
-    z-index: 3;
-  }
-  
-  .dropdown-content a {
-    color: #333;
-    padding: 12px 16px;
-    text-decoration: none;
-    font-size: 28px;
-    display: block;
-  }
-  
-  .dropdown:hover .dropdown-content,
-  .dropdown:focus .dropdown-content {
-    display: block;
-  }
-  
-  @media screen and (max-width: 768px) {
-    .dropdown {
-      position: static;
-    }
-    
-    .dropdown-content {
-      position: static;
-      display: none;
-      max-height: 0;
-      overflow: hidden;
-      transition: max-height 0.3s ease-out;
-    }
-  
-    .dropdown:focus .dropdown-content {
-      display: block;
-      max-height: 500px;
-    }
-  }
 
 .div-page {
     height: 100vh;
@@ -148,6 +107,84 @@ header{
     margin: auto;
     border-radius: 30px;
 }
+
+.add{
+  position: absolute;
+  align-items: center;
+  background-color: #000000;
+  border: 2px solid #ffffff;
+  box-sizing: border-box;
+  color: #ffffff;
+  cursor: pointer;
+  display: inline-flex;
+  fill: #000;
+  font-family: Inter,sans-serif;
+  font-size: 24px;
+  font-weight: 600;
+  width: 50px;
+  height: 50px;
+  justify-content: center;
+  letter-spacing: -.8px;
+  outline: 0;
+  text-align: center;
+  text-decoration: none;
+  transition: all .3s;
+  user-select: none;
+  -webkit-user-select: none;
+  touch-action: manipulation;
+  left: 3%;
+}
+
+.div-add {
+  height: 180px;
+  width: 0;
+  position: fixed;
+  z-index: 1;
+  top: 100px;
+  left: 55px;
+  overflow-x: hidden;
+  transition: 0.5s;
+  background-color: #3C3F3E;
+  border-radius: 10px;
+}
+
+.boton{
+  align-items: center;
+  background-color: #ffffff;
+  border: 2px solid #000;
+  box-sizing: border-box;
+  color: #000000;
+  cursor: pointer;
+  display: inline-flex;
+  fill: #000;
+  font-family: Inter,sans-serif;
+  font-size: 18px;
+  font-weight: 600;
+  height: 48px;
+  justify-content: center;
+  letter-spacing: -.8px;
+  line-height: 24px;
+  min-width: 140px;
+  outline: 0;
+  padding: 0 50px;
+  text-align: center;
+  text-decoration: none;
+  transition: all .3s;
+  user-select: none;
+  -webkit-user-select: none;
+  touch-action: manipulation;
+}
+
+.input {
+  border: 2px solid #e8e8e8;
+  padding: 15px;
+  border-radius: 10px;
+  background-color: #ffffff;
+  font-size: 20px;
+  font-weight: bold;
+  text-align: center;
+  width: 350px;
+ }
 
 .div-info {
   display: flex;
@@ -183,41 +220,13 @@ header{
   position: sticky;
   bottom: 0;
   margin-top: auto;
-  padding-top: auto;
 }
 
 .version {
   font-family: sans-serif;
   font-size: 14px;
+  margin: 0;
 }
-
-/*.boton {
-  align-items: center;
-  border: 2px solid #000000;
-  box-sizing: border-box;
-  color: #fff;
-  cursor: pointer;
-  display: inline-flex;
-  fill: #000;
-  font-family: Inter, sans-serif;
-  font-size: 30px;
-  font-weight: 400;
-  height: 48px;
-  justify-content: center;
-  letter-spacing: -0.8px;
-  line-height: 24px;
-  min-width: 140px;
-  outline: 0;
-  padding: 40px 50px;
-  text-align: center;
-  text-decoration: none;
-  transition: all 0.3s;
-  user-select: none;
-  -webkit-user-select: none;
-  touch-action: manipulation;
-  border-radius: 10px;
-  margin-bottom: 15px;
-}*/
 
 .materia{
   width: 100%;
@@ -231,11 +240,23 @@ header{
   border-radius: 20px 20px 0px 0px;
 }
 
-.materia-info i{
+.user{
   position:absolute;
-  font-size: 100px;
+  width: 90px;
+  height: 90px;
+  background-color: #fff;
   top: 50px;
   right: 10px;
+  border-radius: 50%;
+}
+
+.user p{
+  text-align: center;
+  margin:0;
+}
+
+.ph-user-circle{
+  font-size: 90px;
 }
 
 .materia-nombre{
@@ -245,11 +266,52 @@ header{
   font-size: 26px;
 }
 
+.materia-nombre:hover{
+  font-size: 30px;
+}
+
+.nom{
+  display: flex;
+}
+
+.nom i{
+  padding-top: 10px;
+  position: relative;
+  font-size: 20px;
+}
+
+.nom i:hover{
+  color: #fff;
+  font-size: 25px;
+  cursor: pointer;
+}
+
+.materia-detail{
+  display: none;
+  position: absolute;
+  background-color: #f9f9f9;
+  min-width: 160px;
+  box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+  z-index: 2;
+  right: 20px;
+  left: auto;
+  margin-top: 20px;
+}
+
+.materia-detail a{
+  color: #333;
+  padding: 10px 14px;
+  text-decoration: none;
+  font-size: 20px;
+  display: block;
+}
+
 .materia-nombrep{
   text-align: center;
   height: 36px;
   padding-top: 10px;
   width: 95%;
+  margin:0;
 }
 
 .materia-profesor{
@@ -285,18 +347,17 @@ header{
   border-radius: 0px 0px 20px 20px;
 }
 
- /* The sidepanel menu */
  .sidepanel {
-  height: 500px; /* Specify a height */
-  width: 0px; /* 0 width - change this with JavaScript */
-  position: fixed; /* Stay in place */
-  z-index: 1; /* Stay on top */
+  height: 500px;
+  width: 0px;
+  position: fixed;
+  z-index: 1;
   top: 100px;
   right: 0;
-  background-color: #111; /* Black*/
-  overflow-x: hidden; /* Disable horizontal scroll */
-  padding-top: 60px; /* Place content 60px from the top */
-  transition: 0.5s; /* 0.5 second transition effect to slide in the sidepanel */
+  background-color: #111;
+  overflow-x: hidden;
+  padding-top: 60px;
+  transition: 0.5s;
 }
 
 .sidepanel a {
@@ -343,3 +404,94 @@ header{
 .openbtn:hover {
   background-color: #444;
 } 
+
+.chatbot{
+  background-color: #fff;
+  width: 75px;
+  height: 75px;
+  position:absolute;
+  bottom: 25px;
+  left: 25px;
+  border-radius: 50%;
+}
+
+.chatbot p{
+  text-align: center;
+}
+
+.chatbot i{
+  font-size: 50px;
+}
+
+.chatbot:hover{
+  background-color: #000;
+  width: 80px;
+  height: 80px;
+  cursor: pointer;
+}
+
+.chatbot:hover p{
+  color: #fff;
+}
+
+.panelrobot {
+  height: 600px;
+  width: 0;
+  position: fixed;
+  z-index: 1;
+  bottom: 100px;
+  left: 55px;
+  overflow-x: hidden;
+  transition: 0.5s;
+}
+
+.bot-top{
+  display: flex;
+  height: 100px;
+  background-color: #000;
+  align-items: center;
+}
+
+.bot-top h2{
+  font-family: monospace;
+  color: #fff;
+  font-size: 30px;
+  padding-left: 20px;
+  padding-right: 150px;
+}
+
+.bot-top p{
+  padding-left: 30px;
+  color: #fff;
+  font-size: 30px;
+}
+
+.bot-chat{
+  height: 500px;
+  background-color: #fff;
+}
+
+.close {
+  color: #818181;
+  padding-left: auto;
+  padding-right: 20px;
+  position: relative;
+  display: inline-block;
+  text-decoration: none;
+  font-size: 28px;
+  transition: 0.3s;
+}
+
+.bot-chat p{
+  margin:0;
+}
+
+.div-error{
+  width: 100vh;
+  overflow: hidden;
+}
+
+.error-no{
+  width: 100%;
+  text-align: center;
+}

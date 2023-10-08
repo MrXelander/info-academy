@@ -19,7 +19,7 @@
                 <a href="{% url 'dashboard' %}">
                     <img class="logo" src="{% static 'img/unam2.png' %}">
                 </a>
-                <div class="div-titulo"><h1 class="titulo">GPT-UNAM</h1></div>
+                <div class="div-titulo"><h1 class="titulo">Info-Academy</h1></div>
                 <div class="dropdown">
                     <button class="dropbtn">
                         Bienvenido, {{ short_name }}
@@ -72,7 +72,7 @@
                         {% endif %}
                     </div>
                     <div class="version-container">
-                        <a href="{% url 'usersubtopics' materia.id tema.id %}" class="boton2">REGRESAR</a>
+                        <a href="{% url 'subjectopic' materia.codigo %}" class="boton2">REGRESAR</a>
                         <a id="refresh-btn" class="boton">Otro video</a>
                     </div>
                 </div>

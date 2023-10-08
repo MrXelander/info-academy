@@ -1,240 +1,295 @@
 html{
-    height: 100vh;
-    width: 100vw;
+  height: 100vh;
+  width: 100vw;
 }
 
 body{
-    height: 100vh;
-    width: 100vw;
-    margin: 0px;
-    padding: 0px;
-    box-sizing: border-box;
+  height: 100vh;
+  width: 100vw;
+  margin: 0px;
+  padding: 0px;
+  box-sizing: border-box;
+  overflow: hidden;
 }
 
 .img {
-    background-size: cover;
+  background-size: cover;
 }
-    
+  
 header{
-    width: 100%;
-    vertical-align: top;
+  width: 100%;
+  vertical-align: top;
 }
 
 .nav{
-    display: flex;
-    top: 0px;
-    background-color: white;
-    width: 100%;
-    position: fixed;
+  display: flex;
+  top: 0px;
+  background-color: white;
+  width: 100%;
+  position: fixed;
 }
 
 .whitespace1{
-    width: 2%;
+  width: 2%;
 }
 
 .logo{
-    padding-top: 10%;
-    width: 50px;
-    height: auto;
+  padding-top: 10%;
+  width: 50px;
+  height: auto;
 }
 
 .div-titulo{
-    margin-left: 25px;
+  margin-left: 25px;
 }
 
 .titulo{
-    vertical-align:middle;
-    font-family:sans-serif;
-    font-weight: bold;
-    color: #5B372D;
+  vertical-align:middle;
+  font-family:sans-serif;
+  font-weight: bold;
+  color: #000000;
 }
 
 .dropdown {
-    position: relative;
-    display: inline-block;
-    margin-left: auto;
-    margin-right: 30px;
-  }
-  
-  .dropbtn {
-    margin-top: 3%;
-    align-items: center;
-    background-color: #ffffff;
-    border: 2px solid #fff;
-    box-sizing: border-box;
-    color: #000000;
-    cursor: pointer;
-    display: inline-flex;
-    fill: #000;
-    font-family: Inter,sans-serif;
-    font-size: 28px;
-    font-weight: 500;
-    height: 48px;
-    justify-content: center;
-    letter-spacing: -.8px;
-    line-height: 24px;
-    min-width: 140px;
-    outline: 0;
-    text-align: center;
-    text-decoration: none;
-    transition: all .3s;
-    user-select: none;
-    -webkit-user-select: none;
-    touch-action: manipulation;
-  }
-
-  .space {
-    margin-right: 10px;
-  }
-
-  .dropbtn i {
-    font-size: 50px;
-  }
-  
-  .dropdown-content {
-    display: none;
-    position: absolute;
-    background-color: #f9f9f9;
-    min-width: 160px;
-    box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
-    z-index: 1;
-  }
-  
-  .dropdown-content a {
-    color: #333;
-    padding: 12px 16px;
-    text-decoration: none;
-    font-size: 28px;
-    display: block;
-  }
-  
-  .dropdown:hover .dropdown-content,
-  .dropdown:focus .dropdown-content {
-    display: block;
-  }
-  
-  @media screen and (max-width: 768px) {
-    .dropdown {
-      position: static;
-    }
-    
-    .dropdown-content {
-      position: static;
-      display: none;
-      max-height: 0;
-      overflow: hidden;
-      transition: max-height 0.3s ease-out;
-    }
-  
-    .dropdown:focus .dropdown-content {
-      display: block;
-      max-height: 500px;
-    }
-  }
-
-.div-page {
-    height: 100vh;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    padding-top: 35px;
-}
-
-.div-form {
-    margin-top: 30%;
-    background-color: rgba(255, 255, 255, 0.6);
-    width: 95%;
-    height: 85%;
-    margin: auto;
-    border-radius: 30px;
-}
-
-.div-info {
-  display: flex;
-  flex-direction: column;
-  justify-content: flex-start;
-  align-items: center;
-  height: 100%;
-  overflow: auto;
-  overflow-y: scroll;
-  max-height: 100vh;
-}
-
-.div-info h1{
+  position: relative;
   display: inline-block;
-  font-family: sans-serif;
-  font-size: 40px;
-  border-bottom: 3px solid black;
-  margin-bottom: 0px;
+  margin-left: auto;
+  margin-right: 30px;
 }
 
-.div-info h3{
-  font-family: monospace;
-  color: #5B372D;
-  font-size: 24px;
-  width: 20%;
-  text-align: center;
-  padding-top: 1px;
-}
-
-.materias-container {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  width: 90%;
-  padding-top: 0px;
-  padding-bottom: 30px;
-  grid-gap: 100px;
-  overflow: auto;
-  overflow-y: scroll;
-}
-
-.version-container {
-  position: sticky;
-  bottom: 0;
-  margin-top: auto;
-  padding-top: auto;
-}
-
-.boton {
+.dropbtn {
+  margin-top: 3%;
   align-items: center;
   background-color: #ffffff;
-  border: 2px solid #ffffff;
+  border: 2px solid #fff;
   box-sizing: border-box;
   color: #000000;
   cursor: pointer;
   display: inline-flex;
   fill: #000;
-  font-family: Inter, sans-serif;
-  font-size: 24px;
-  font-weight: 400;
+  font-family: Inter,sans-serif;
+  font-size: 28px;
+  font-weight: 500;
   height: 48px;
   justify-content: center;
-  letter-spacing: -0.8px;
+  letter-spacing: -.8px;
   line-height: 24px;
   min-width: 140px;
   outline: 0;
-  padding: 40px 50px;
   text-align: center;
   text-decoration: none;
-  transition: all 0.3s;
+  transition: all .3s;
   user-select: none;
   -webkit-user-select: none;
   touch-action: manipulation;
-  border-radius: 10px;
-  margin-bottom: 15px;
 }
 
-.boton2{
+.space {
+  margin-right: 10px;
+}
+
+.dropbtn i {
+  font-size: 50px;
+}
+
+.div-page {
+  height: 100vh;
+  display: flex;
+  justify-content: center;
   align-items: center;
-  background-color: #5B372D;
-  border: 2px solid #000;
+  padding-top: 35px;
+}
+
+.div-form {
+  margin-top: 30%;
+  width: 95%;
+  height: 85%;
+  margin: auto;
+  border-radius: 30px;
+}
+
+.add{
+  position: absolute;
+  align-items: center;
+  background-color: #000000;
+  border: 2px solid #ffffff;
   box-sizing: border-box;
   color: #ffffff;
   cursor: pointer;
   display: inline-flex;
   fill: #000;
   font-family: Inter,sans-serif;
+  font-size: 24px;
+  font-weight: 600;
+  width: 50px;
+  height: 50px;
+  justify-content: center;
+  letter-spacing: -.8px;
+  outline: 0;
+  text-align: center;
+  text-decoration: none;
+  transition: all .3s;
+  user-select: none;
+  -webkit-user-select: none;
+  touch-action: manipulation;
+  left: 10%;
+}
+
+.div-add {
+  height: 180px;
+  width: 0;
+  position: fixed;
+  z-index: 1;
+  top: 100px;
+  left: 55px;
+  overflow-x: hidden;
+  transition: 0.5s;
+  background-color: #3C3F3E;
+  border-radius: 10px;
+}
+
+.input {
+  border: 2px solid #e8e8e8;
+  padding: 15px;
+  border-radius: 10px;
+  background-color: #ffffff;
   font-size: 20px;
+  font-weight: bold;
+  text-align: center;
+  width: 350px;
+ }
+
+ .boton{
+  align-items: center;
+  background-color: #ffffff;
+  border: 2px solid #000;
+  box-sizing: border-box;
+  color: #000000;
+  cursor: pointer;
+  display: inline-flex;
+  fill: #000;
+  font-family: Inter,sans-serif;
+  font-size: 18px;
+  font-weight: 600;
+  height: 48px;
+  justify-content: center;
+  letter-spacing: -.8px;
+  line-height: 24px;
+  min-width: 140px;
+  outline: 0;
+  padding: 0 50px;
+  text-align: center;
+  text-decoration: none;
+  transition: all .3s;
+  user-select: none;
+  -webkit-user-select: none;
+  touch-action: manipulation;
+}
+
+.div-info {
+display: flex;
+flex-direction: column;
+justify-content: flex-start;
+align-items: center;
+height: 100%;
+overflow: auto;
+overflow-y: scroll;
+max-height: 100vh;
+}
+
+.div-info h1{
+display: inline-block;
+font-family: sans-serif;
+color: #000;
+font-size: 40px;
+border-bottom: 3px solid #000;
+box-shadow: inset 500px 0 0 0 #ffffffb5;
+margin: 0;
+}
+
+.materias-container {
+display: grid;
+grid-template-columns: repeat(3, 1fr);
+width: 90%;
+padding-top: 10px;
+padding-bottom: 50px;
+grid-gap: 100px;
+overflow: auto;
+overflow-y: scroll;
+}
+
+.version-container {
+position: sticky;
+bottom: 0;
+margin-top: auto;
+padding-top: auto;
+}
+
+.version {
+font-family: sans-serif;
+font-size: 14px;
+}
+
+.materia{
+width: 100%;
+height: 300px;
+padding-bottom: 20px;
+}
+
+.materia-info{
+  position: relative;
+  height: 50px;
+  border-radius: 20px 20px 0px 0px;
+}
+
+.nom{
+  display: flex;
+}
+
+.nom i{
+  padding-top: 10px;
+  position: relative;
+  font-size: 20px;
+}
+
+.nom i:hover{
+  color: #fff;
+  font-size: 25px;
+  cursor: pointer;
+}
+
+.materia-detail{
+  display: none;
+  position: absolute;
+  background-color: #f9f9f9;
+  min-width: 160px;
+  box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+  z-index: 2;
+  right: 20px;
+  left: auto;
+  margin-top: 20px;
+}
+
+.materia-detail a{
+  color: #333;
+  padding: 10px 14px;
+  text-decoration: none;
+  font-size: 20px;
+  display: block;
+}
+
+.inscribirse{
+  position: absolute;
+  align-items: center;
+  background-color: #000000;
+  border: 2px solid #ffffff;
+  box-sizing: border-box;
+  color: #ffffff;
+  cursor: pointer;
+  display: inline-flex;
+  fill: #000;
+  font-family: Inter,sans-serif;
+  font-size: 16px;
   font-weight: 600;
   height: 48px;
   justify-content: center;
@@ -249,5 +304,218 @@ header{
   user-select: none;
   -webkit-user-select: none;
   touch-action: manipulation;
-  margin-bottom: 50px;
+  right: 10%;
+}
+
+.materia-nombrep{
+  text-align: center;
+  height: 36px;
+  padding-top: 10px;
+  width: 95%;
+  margin:0;
+  color: #fff;
+  font-size: 24px;
+  font-family: monospace;
+}
+
+.materia-info.uno{
+background-color: #3C3F3E;
+}
+
+.materia-info.dos{
+background-color: #CEA47C;
+}
+
+.materia-info.tres{
+background-color: #6D8FA3;
+}
+
+.materia-info.cuatro{
+background-color: #875C40;
+}
+
+.materia-info.cinco{
+background-color: #96B2B7;
+}
+
+.materia-p{
+background-color: #ffffffd9;
+height: 250px;
+border-radius: 0px 0px 20px 20px;
+}
+
+.materia-p i{
+  font-size: 40px;
+}
+
+/* The sidepanel menu */
+.sidepanel {
+height: 500px; /* Specify a height */
+width: 0px; /* 0 width - change this with JavaScript */
+position: fixed; /* Stay in place */
+z-index: 1; /* Stay on top */
+top: 100px;
+right: 0;
+background-color: #111; /* Black*/
+overflow-x: hidden; /* Disable horizontal scroll */
+padding-top: 60px; /* Place content 60px from the top */
+transition: 0.5s; /* 0.5 second transition effect to slide in the sidepanel */
+}
+
+.sidepanel a {
+color: #818181;
+padding: 24px 16px;
+text-decoration: none;
+font-size: 28px;
+display: block;
+transition: 0.3s;
+}
+/* The sidepanel links */
+.a {
+padding: 8px 8px 8px 32px;
+text-decoration: none;
+font-size: 25px;
+display: block;
+transition: 0.3s;
+}
+
+/* When you mouse over the navigation links, change their color */
+.sidepanel a:hover {
+color: #f1f1f1;
+}
+
+/* Position and style the close button (top right corner) */
+.sidepanel .closebtn {
+position: absolute;
+top: 0;
+right: 25px;
+font-size: 36px;
+margin-left: 50px;
+}
+
+/* Style the button that is used to open the sidepanel */
+.openbtn {
+font-size: 20px;
+cursor: pointer;
+background-color: #111;
+color: white;
+border: 0;
+position: right;
+}
+
+.openbtn:hover {
+background-color: #444;
+} 
+
+.p-content{
+  margin: 0;
+}
+
+.subtema{
+  margin: 0;
+  align-items: center;
+  background-color: #ffffff;
+  border: 2px solid #030303;
+  box-sizing: border-box;
+  color: #000;
+  cursor: pointer;
+  display: inline-flex;
+  fill: #000;
+  font-family: Inter,sans-serif;
+  font-size: 20px;
+  font-weight: 600;
+  height: 48px;
+  justify-content: center;
+  letter-spacing: -.8px;
+  line-height: 24px;
+  width: 100%;
+  outline: 0;
+  padding: 0 17px;
+  text-align: center;
+  text-decoration: none;
+  transition: all .3s;
+  user-select: none;
+  -webkit-user-select: none;
+  touch-action: manipulation;
+}
+
+.chatbot{
+  background-color: #fff;
+  width: 75px;
+  height: 75px;
+  position:absolute;
+  bottom: 25px;
+  left: 25px;
+  border-radius: 50%;
+}
+
+.chatbot p{
+  text-align: center;
+}
+
+.chatbot i{
+  font-size: 50px;
+}
+
+.chatbot:hover{
+  background-color: #000;
+  width: 80px;
+  height: 80px;
+  cursor: pointer;
+}
+
+.chatbot:hover p{
+  color: #fff;
+}
+
+.panelrobot {
+  height: 600px;
+  width: 0;
+  position: fixed;
+  z-index: 1;
+  bottom: 100px;
+  left: 55px;
+  overflow-x: hidden;
+  transition: 0.5s;
+}
+
+.bot-top{
+  display: flex;
+  height: 100px;
+  background-color: #000;
+  align-items: center;
+}
+
+.bot-top h2{
+  font-family: monospace;
+  color: #fff;
+  font-size: 30px;
+  padding-left: 20px;
+  padding-right: 150px;
+}
+
+.bot-top p{
+  padding-left: 30px;
+  color: #fff;
+  font-size: 30px;
+}
+
+.bot-chat{
+  height: 500px;
+  background-color: #fff;
+}
+
+.close {
+  color: #818181;
+  padding-left: auto;
+  padding-right: 20px;
+  position: relative;
+  display: inline-block;
+  text-decoration: none;
+  font-size: 28px;
+  transition: 0.3s;
+}
+
+.bot-chat p{
+  margin:0;
 }

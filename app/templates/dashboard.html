@@ -19,7 +19,7 @@
                 <a href="{% url 'dashboard' %}">
                     <img class="logo" src="{% static 'img/unam2.png' %}">
                 </a>
-                <div class="div-titulo"><h1 class="titulo">GPT-UNAM</h1></div>
+                <div class="div-titulo"><h1 class="titulo">Info-Academy</h1></div>
                 <div class="dropdown">
                     <button class="dropbtn" onclick="openNav()">
                         Bienvenido, {{ short_name }}
@@ -47,10 +47,6 @@
                     <i class="ph-bold ph-notebook"></i>
                 </a>
                 {% endif %}
-                <a href="#">
-                    Chat (Beta)
-                    <i class="ph-bold ph-chat-circle-dots"></i>
-                </a>
                 {% if user.role == 'Administrador' %}
                 <a href="{% url 'users' %}">
                     Usuarios
@@ -64,26 +60,70 @@
             </div>
             <div class="div-form">
                 <div class="div-info">
+                    {% if user.role == 'Administrador' or user.role == 'Profesor' %}
+                    <button class="add" onclick="openAdd()">+</button>
+                    <div class="div-add" id="div-add">
+                        <a href="javascript:void(0)" class="close" onclick="closeAdd()">&times;</a>
+                        <form method="post">
+                            {% csrf_token %}
+                            <input class="input" id="nombre_materia" name="nombre_materia" type="text" id placeholder="Nombre de la materia" required>
+                            <div>
+                                <button class="boton" type="submit">Crear</button>
+                            </div>
+                        </form>
+                    </div>
+                    {% endif %}
                     <div class="materias-container">
                         {% if materias %}
                         {% for materia in materias %}
-                            <div class="materia">
-                                <div class="materia-info {{ colores|random }}">
-                                    <p class="materia-nombrep"><a href="{% url 'subjectopic' materia.id %}" class="materia-nombre">{{ materia.nombre }}</a></p>
-                                    <p class="materia-profesor">{{ materia.profesor.first_name }} {{ materia.profesor.last_name }}</p>
-                                    <i class="ph-duotone ph-user-circle"></i>
+                        <div class="materia">
+                            <div class="materia-info {{ colores|random }}">
+                                <div class="nom">
+                                    <p class="materia-nombrep"><a href="{% url 'subjectopic' materia.codigo %}" class="materia-nombre">{{ materia.nombre }}</a></p>
+                                    <i class="ph-fill ph-dots-three-outline-vertical" onclick="openOpc({{ materia.id }})"></i>
+                                    <div id="myPanelOpc{{ materia.id }}" class="materia-detail">
+                                        {% if user.role == 'Administrador' or user.role == 'Profesor' %}
+                                            <a href="#" onclick="confirmDelete({{ materia.id }})">
+                                                <i class="ph ph-trash"></i>
+                                                Eliminar
+                                            </a>
+                                        {% endif %}
+                                        {% if user.role == 'Estudiante' %}
+                                        <a href="{% url 'baja' materia.codigo %}">
+                                            <i class="ph ph-arrow-circle-down"></i>
+                                            Dar de baja
+                                        </a>
+                                        {% endif %}
+                                    </div>
                                 </div>
-                                <div class="materia-p">
-                                    
-                                </div>
+                                <p class="materia-profesor">{{ materia.profesor.first_name }} {{ materia.profesor.last_name }}</p>
+                                <div class="user"><p><i class="ph-duotone ph-user-circle"></i></p></div>
                             </div>
+                            <div class="materia-p">
+                                
+                            </div>
+                        </div>
                         {% endfor %}
                         {% else %}
-                        <p>No hay materias disponibles.</p>
+                        <div class="materia-info {{ colores|random }}" style="border-radius: 20px 20px 20px 20px; color:#fff; width: 1000px; margin: 20%";>
+                            <h2 class="error-no">No hay materias disponibles.</h2>
+                            <a href="{% url 'subjectstudent' %}" style="text-decoration: none; color:#fff";><p style="text-align: center; font-size: 20px;">Inscribirme a una nueva clase</p></a>
+                        </div>
                         {% endif %}
                     </div>
+                    <div id="myPanelRobot" class="panelrobot">
+                        <div class="bot-top">
+                            <p><i class="ph-duotone ph-robot"></i></p>
+                            <h2>Chatbot</h2>
+                            <a href="javascript:void(0)" class="close" onclick="closeBot()">&times;</a>
+                        </div>
+                        <div class="bot-chat">
+                            <p> Hola soy un robot</p>
+                        </div>
+                    </div>
+                    <div class="chatbot" onclick="openBot()"><p><i class="ph-duotone ph-robot"></i></p></div>
                     <div class="version-container">
-                        <p class="version">Versión 1.0</p>
+                        <p class="version">Versión {{ version }}</p>
                     </div>
                 </div>
             </div>
@@ -106,13 +146,59 @@ function confirmLogout() {
 
 /* Set the width of the sidebar to 250px (show it) */
 function openNav() {
-  document.getElementById("mySidepanel").style.width = "250px";
+    if(document.getElementById("mySidepanel").style.width == "250px")
+    {
+        document.getElementById("mySidepanel").style.width = "0px";
+    }else{
+        document.getElementById("mySidepanel").style.width = "250px";
+    }
+}
+
+function openBot() {
+    if(document.getElementById("myPanelRobot").style.width == "400px"){
+        document.getElementById("myPanelRobot").style.width = "0";
+    }else{
+        document.getElementById("myPanelRobot").style.width = "400px";
+    }
+}
+
+function openOpc(materiaId) {
+    var panelOpc = document.getElementById("myPanelOpc" + materiaId);
+    if (panelOpc.style.display == "block") {
+        panelOpc.style.display = "none";
+    } else {
+        panelOpc.style.display = "block";
+    }
+}
+
+function openAdd() {
+    if(document.getElementById("div-add").style.width == "400px"){
+        document.getElementById("div-add").style.width = "0";
+    }else{
+        document.getElementById("div-add").style.width = "400px";
+    }
 }
 
 /* Set the width of the sidebar to 0 (hide it) */
 function closeNav() {
   document.getElementById("mySidepanel").style.width = "0";
 } 
+
+function closeBot() {
+  document.getElementById("myPanelRobot").style.width = "0";
+}
+
+function closeAdd() {
+  document.getElementById("div-add").style.width = "0";
+}
+
+function confirmDelete(materiaId) {
+      alertify.confirm("¿Estás seguro de que deseas eliminar esta materia?", function () {
+        window.location.href = "/subjects/delete/" + materiaId + "/";
+      }, function () {
+        alertify.warning('Eliminación cancelada');
+      });
+}
 </script>
 
 {% if messages %}

@@ -18,7 +18,7 @@
                 <a href="{% url 'index' %}">
                     <img class="logo" src="{% static 'img/unam2.png' %}">
                 </a>
-                <div class="div-titulo"><h1 class="titulo">GPT-UNAM</h1></div>
+                <div class="div-titulo"><h1 class="titulo">Info-Academy</h1></div>
             </nav>
         </header>
         <div class="div-page">
@@ -32,13 +32,16 @@
                         </div>
                         <div class="ln-2">
                             <select class="input" id="tipo" name="tipo" placeholder="" required>
-                                <option value="Teórico" selected>Teórico</option>
-                                <option value="Práctico">Práctico</option>
-                                <option value="Mixto">Mixto</option>
+                                <option value="Material didáctico" selected>Material didáctico</option>
+                                <option value="Evaluación">Evaluación</option>
+                                <option value="Video">Video</option>
                             </select>
                         </div>
+                        <div class="ln-2">
+                            <input type="file" name="audio" accept="application/pdf,application/vnd.ms-excel,application/msword"> 
+                        </div>
                         <div class="ln-3">
-                            <textarea class="input" id="descripcion" type="text" name="descripcion">Descripción</textarea>                           
+                            <textarea class="input" id="descripcion" type="text" name="descripcion">Descripción</textarea>                      
                         </div>
                         <div class="ln-4">
                             <a href="{% url 'subtopics' materia.id tema.id %}" class="cancelar">REGRESAR</a>

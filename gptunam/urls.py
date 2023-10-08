@@ -1,6 +1,8 @@
 from django.contrib import admin
 from django.urls import path
 from app import views
+from django.conf import settings
+from django.conf.urls.static import static
 
 urlpatterns = [
     path('', views.index, name="index"),
@@ -23,8 +25,17 @@ urlpatterns = [
     path('student/subjects', views.subjectstudent, name="subjectstudent"),
     path('users', views.users, name="users"),
     path('users/edit/<int:user_id>/', views.edit_user, name='edit_user'),
-    path('subject/<int:materia_id>/list', views.subjectopic, name='subjectopic'),
+    path('<uuid:codigo>', views.subjectopic, name='subjectopic'),
+    path('<uuid:codigo>/add', views.inscripcion, name='inscripcion'),
+    path('<uuid:codigo>/rm', views.baja, name='baja'),
+    path('<uuid:codigo>/<int:tema_id>/add', views.addsubtopic, name='addsubtopic'),
     path('subject/<int:materia_id>/topic/<int:tema_id>/subtopic/list', views.usersubtopics, name='usersubtopics'),
     path('subject/<int:materia_id>/topic/<int:tema_id>/subtopic/<int:subtema_id>', views.practice, name='practice'),
-    path('subject/<int:materia_id>/topic/<int:tema_id>/subtopic/<int:subtema_id>/video', views.video, name='video'),
+    path('<uuid:codigo>/<int:tema_id>/v/<int:subtema_id>', views.video, name='video'),
+    path('<uuid:codigo>/<int:tema_id>/d/<int:subtema_id>', views.document, name='document'),
+    path('<uuid:codigo>/<int:tema_id>/d/<int:subtema_id>/<int:doc_id>', views.openpdf, name='openpdf'),
+    path('<uuid:codigo>/<int:tema_id>/e/<int:subtema_id>', views.evaluationq, name='evaluationq'),
 ]
+
+if settings.DEBUG:
+    urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
