@@ -4,7 +4,7 @@
     <head>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-        <title>Editar usuario</title>
+        <title>Agregar actividad</title>
         <link rel="shortcut icon" type="image/png" href="{% static 'img/unam2.png' %}">
         <link rel="stylesheet" type="text/css" href="{% static 'css/addsubtopic.css' %}">
         <link rel="stylesheet" href="{% static 'alertifyjs/css/alertify.min.css' %}" />
@@ -25,52 +25,93 @@
             <div class="div-form">
                 <div class="div-info">
                     <h1>Agregar actividad</h1>
-                    <form method="post" enctype="multipart/form-data">
+                    <select class="input" id="tipo" name="tipo" placeholder="" required>
+                        <option value="1" selected>Material didáctico</option>
+                        <option value="2">Cuestionario</option>
+                        <option value="3">Proyecto</option>
+                        <option value="4">Video</option>
+                    </select>
+                    <form action="{% url 'addmaterial' materia.codigo tema.id %}" method="post" id="material_didactico" enctype="multipart/form-data">
                         {% csrf_token %}
                         <div class="formulario-container">
                             <div class="ln-1">
                                 <input class="input" id="nombre_subtema" type="text" name="nombre_subtema" placeholder="Nombre" required>
                             </div>
-                            <div class="ln-2">
-                                <select class="input" id="tipo" name="tipo" placeholder="" required>
-                                    <option value="Material didáctico" selected>Material didáctico</option>
-                                    <option value="Evaluación">Evaluación</option>
-                                    <option value="Video">Video</option>
-                                </select>
+                            <div class="ln-1">
+                                <textarea class="input" id="descripcion" type="text" name="descripcion">Descripción</textarea>                  
+                            </div>
+                            <div class="ln-1">
+                                <input type="file" name="file" accept="application/pdf,application/vnd.ms-excel,application/msword">
+                            </div>
+                            <div class="ln-1">
+                                <a href="{% url 'subjectopic' materia.codigo %}" class="cancelar">REGRESAR</a>
+                                <button class="registro">CREAR</button>
+                            </div>
+                        </div>
+                    </form>
+                    <form method="post" enctype="multipart/form-data" id="cuestionario" style="display: none;">
+                        {% csrf_token %}
+                        <div class="formulario-container">
+                            <div class="ln-1">
+                                <input class="input" id="nombre_subtema" type="text" name="nombre_subtema" placeholder="Nombre" required>
                             </div>
                             <div class="ln-1">
                                 <textarea class="input" id="descripcion" type="text" name="descripcion">Descripción</textarea>                  
                             </div>
-                            <div class="ln-1" id="material_didactico" style="display: none;">
-                                <input type="file" name="file" accept="application/pdf,application/vnd.ms-excel,application/msword">
-                            </div>
-                            <div class="ln-1" id="evaluacion" style="display: none;">
-                                <select class="input" name="tipo_evaluacion" id="tipo_evaluacion">
-                                    <option value="Cuestionarios">Cuestionario</option>
-                                    <option value="Proyectos">Proyecto</option>
-                                </select>
-                            </div>
-                            <div class="ln-1" id="video" style="display: none;">
-                                <label for="enlace_video" style="font-family: monospace; font-size: 24px;">https://www.youtube.com/watch?v=</label>
-                                <input class="input" type="text" name="enlace_video" placeholder="Deja vacio para generar automaticamente">
-                            </div>
-                            <div class="ln-5" id="preguntas_cuestionario" style="display: none;">
+                            <div class="ln-5" id="preguntas_cuestionario">
                                 <div class="pregunta">
-                                    <input type="text" name="preg[]" class="input" placeholder="Pregunta" required>
-                                    <input type="text" name="correcta[]" class="input" placeholder="Respuesta correcta" required>
-                                    <input type="text" name="opc_a[]" class="input" placeholder="Opcion A" required>
-                                    <input type="text" name="opc_b[]" class="input" placeholder="Opcion B" required>
-                                    <input type="text" name="opc_c[]" class="input" placeholder="Opcion C" required>
+                                    <input type="text" name="preg[]" class="input" placeholder="Pregunta">
+                                    <input type="text" name="correcta[]" class="input" placeholder="Respuesta correcta">
+                                    <input type="text" name="opc_a[]" class="input" placeholder="Opcion A">
+                                    <input type="text" name="opc_b[]" class="input" placeholder="Opcion B">
+                                    <input type="text" name="opc_c[]" class="input" placeholder="Opcion C">
                                     <button type="button" class="eliminar_pregunta">Eliminar</button>
                                 </div>
                             </div>                            
-                            <button id="agregar_pregunta" style="display: none;">Agregar Pregunta</button>
-                        </div>
-                        <div class="ln-4">
-                            <a href="{% url 'subjectopic' materia.codigo %}" class="cancelar">REGRESAR</a>
-                            <button class="registro">CREAR</button>
+                            <button type="button" id="agregar_pregunta">Agregar Pregunta</button>
+                            <div class="ln-1">
+                                <a href="{% url 'subjectopic' materia.codigo %}" class="cancelar">REGRESAR</a>
+                                <button type="submit" class="registro">CREAR</button>
+                            </div>
                         </div>
                     </form>
+                    <form method="post" enctype="multipart/form-data" id="proyecto" style="display: none;">
+                        {% csrf_token %}
+                        <div class="formulario-container">
+                            <div class="ln-1">
+                                <input class="input" id="nombre_subtema" type="text" name="nombre_subtema" placeholder="Nombre" required>
+                            </div>
+                            <div class="ln-1">
+                                <textarea class="input" id="descripcion" type="text" name="descripcion">Descripción</textarea>                  
+                            </div>
+                            <div class="ln-1">
+                                <input type="file" name="file" accept="application/pdf,application/vnd.ms-excel,application/msword">
+                            </div>
+                            <div class="ln-1">
+                                <a href="{% url 'subjectopic' materia.codigo %}" class="cancelar">REGRESAR</a>
+                                <button class="registro">CREAR</button>
+                            </div>
+                        </div>
+                    </form>
+                    <form action="{% url 'addvideo' materia.codigo tema.id %}" method="post" enctype="multipart/form-data" id="video" style="display: none;">
+                        {% csrf_token %}
+                        <div class="formulario-container">
+                            <div class="ln-1">
+                                <input class="input" id="nombre_subtema" type="text" name="nombre_subtema" placeholder="Nombre" required>
+                            </div>
+                            <div class="ln-1">
+                                <textarea class="input" id="descripcion" type="text" name="descripcion">Descripción</textarea>                  
+                            </div>
+                            <div class="ln-1">
+                                <label for="enlace_video" style="font-family: monospace; font-size: 24px;">https://www.youtube.com/watch?v=</label>
+                                <input class="input" type="text" name="enlace_video" placeholder="Deja vacio para generar automaticamente">
+                            </div>
+                            <div class="ln-1">
+                                <a href="{% url 'subjectopic' materia.codigo %}" class="cancelar">REGRESAR</a>
+                                <button class="registro">CREAR</button>
+                            </div>
+                        </div>
+                    </form>              
                 </div>                
             </div>
         </div>       
@@ -91,30 +132,18 @@
         $("#tipo").change(function() {
             var selectedOption = $(this).val();
             $("#material_didactico").hide();
-            $("#evaluacion").hide();
+            $("#proyecto").hide();
+            $("#cuestionario").hide();
             $("#video").hide();
-            $("#preguntas_cuestionario").hide();
-            $("#agregar_pregunta").hide();
             
-            if (selectedOption === "Material didáctico") {
+            if (selectedOption === "1") {
                 $("#material_didactico").show();
-            } else if (selectedOption === "Evaluación") {
-                $("#evaluacion").show();
-            } else if (selectedOption === "Video") {
+            } else if (selectedOption === "2") {
+                $("#cuestionario").show();
+            } else if (selectedOption === "3") {
+                $("#proyecto").show();
+            } else if (selectedOption === "4") {
                 $("#video").show();
-            }
-        });
-    
-        $(document).on("change", "#tipo_evaluacion", function() {
-            var selectedOption = $(this).val();
-            $("#material_didactico").hide();
-            $("#preguntas_cuestionario").hide();
-            $("#video").hide();
-            $("#agregar_pregunta").hide();
-    
-            if (selectedOption === "Cuestionarios") {
-                $("#preguntas_cuestionario").show();
-                $("#agregar_pregunta").show();
             }
         });
     

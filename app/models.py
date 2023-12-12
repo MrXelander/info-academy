@@ -87,8 +87,8 @@ class CuestionarioInicial(models.Model):
         return f"Cuestionario de {self.user.username}"
 
 class Materia(models.Model):
-    nombre = models.CharField(max_length=100, unique=True)
-    codigo = models.UUIDField(default=uuid.uuid4, editable=False)
+    nombre = models.CharField(max_length=100)
+    codigo = models.UUIDField(default=uuid.uuid4, editable=False, unique=True)
     profesor = models.ForeignKey(CustomUser, on_delete=models.CASCADE)
     alumnos = models.ManyToManyField(CustomUser, related_name='materias_inscritas', blank=True, default="")
 
@@ -100,7 +100,7 @@ class Materia(models.Model):
     
 class Tema(models.Model):
     materia = models.ForeignKey(Materia, on_delete=models.CASCADE)
-    nombre = models.CharField(max_length=100, unique=True)
+    nombre = models.CharField(max_length=100)
 
     def __str__(self):
         return self.nombre
@@ -122,9 +122,14 @@ class SubtemaDoc(models.Model):
     def __str__(self):    
         return self.name
 
+class Video(models.Model):
+    subtema = models.ForeignKey(Subtema, on_delete=models.CASCADE)
+    video = models.CharField(max_length=100)
+
 class Evaluacion(models.Model):
     subtema = models.ForeignKey(Subtema, on_delete=models.CASCADE)
     tipo = models.CharField(max_length=50, choices=[('Cuestionarios', 'Cuestionarios'), ('Proyectos', 'Proyectos'), ('Discusiones', 'Discusiones')])
+    valor = models.DecimalField(max_digits=5, decimal_places=2, default=10.00)
 
 class Pregunta(models.Model):
     evaluacion = models.ForeignKey(Evaluacion, on_delete=models.CASCADE)
@@ -141,7 +146,7 @@ class Calificacion(models.Model):
 class RegistroTiempo(models.Model):
     alumno = models.ForeignKey(CustomUser, on_delete=models.CASCADE)
     subtema = models.ForeignKey(Subtema, on_delete=models.CASCADE)
-    tiempo_dedicado = models.PositiveIntegerField(default=0)  # Puedes ajustar el tipo de campo según tus necesidades
+    tiempo_dedicado = models.PositiveIntegerField(default=0)
 
     def __str__(self):
         return f"Registro de tiempo para {self.alumno} en {self.subtema}"

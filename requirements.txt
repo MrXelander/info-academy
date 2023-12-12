@@ -1,4 +1,7 @@
 Django==4.2.2
 mysqlclient==2.2.0
 pytube==15.0.0
-openai==0.27.8
+transformers==4.34.1
+torch==2.1.0
+acelerate==0.24.1
+deep_translator==1.11.4

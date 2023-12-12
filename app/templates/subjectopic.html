@@ -112,7 +112,7 @@
                                             {% if subtema.tipo == 'Material didáctico' %}
                                                 <a href="{% url 'document' materia.codigo tema.id subtema.id %}" class="subtema"><i class="ph ph-notebook"></i> {{ subtema.nombre }}</a>
                                             {% elif subtema.tipo == 'Evaluación' %}
-                                                <a href="{% url 'evaluationq' materia.codigo tema.id subtema.id %}" class="subtema"><i class="ph ph-list-checks"></i>{{ subtema.nombre }}</a>
+                                                <a href="{% url 'evaluationq' materia.codigo tema.id subtema.id %}" class="subtema"><i class="ph ph-list-checks"></i> {{ subtema.nombre }}</a>
                                             {% elif subtema.tipo == 'Video' %}
                                                 <a href="{% url 'video' materia.codigo tema.id subtema.id %}" class="subtema"><i class="ph ph-video"></i> {{ subtema.nombre }}</a>
                                             {% endif %}
@@ -132,12 +132,23 @@
                     </div>
                     <div id="myPanelRobot" class="panelrobot">
                         <div class="bot-top">
-                            <p><i class="ph-duotone ph-robot"></i></p>
-                            <h2>Chatbot</h2>
-                            <a href="javascript:void(0)" class="close" onclick="closeBot()">&times;</a>
+                            <div class="bot-top-items">
+                                <p><i class="ph-duotone ph-robot"></i></p>
+                                <h2>Chatbot</h2>
+                                <a href="javascript:void(0)" class="close" onclick="closeBot()">&times;</a>
+                            </div>
                         </div>
-                        <div class="bot-chat">
-                            <p> Hola soy un robot</p>
+                        <div class="bot-chat" id="bot-chat">
+                            <div class="whitespace2"></div>
+                            <div class="bubble left">Hola, pregunta lo que quieras</div>
+                            <div class="whitespace2"></div>
+                        </div>
+                        <div class="bot-write">
+                            <form id="chatbot-form">
+                                {% csrf_token %}
+                                <textarea name="mensaje_usuario" id="mensaje_usuario" maxlength="50" placeholder="Escribe tus dudas"></textarea>
+                                <button type="button" id="submit-button"><i class="ph ph-paper-plane-tilt"></i></button>
+                            </form>
                         </div>
                     </div>
                     <div class="chatbot" onclick="openBot()"><p><i class="ph-duotone ph-robot"></i></p></div>
@@ -217,6 +228,60 @@ function confirmDelete(temaId, materiaId) {
     alertify.warning('Eliminación cancelada');
   });
 }
+
+function isEmpty(str) {
+    return (!str || str.trim().length === 0);
+}
+
+function sendQuestion() {
+    var mensaje_usuario = document.getElementById("mensaje_usuario").value;
+    if(!isEmpty(mensaje_usuario)){
+        var chatbotUrl = "{% url 'chatbot_endpoint' 128 %}";
+        var csrfToken = document.getElementsByName("csrfmiddlewaretoken")[0].value;
+        var container = document.getElementById("bot-chat");
+        var divUser = document.createElement("div");
+        divUser.className = "bubble right";
+        divUser.innerText = mensaje_usuario;
+        container.appendChild(divUser);
+        var whitespaceDiv = document.createElement("div");
+        whitespaceDiv.className = "whitespace2";
+        container.appendChild(whitespaceDiv);
+        document.getElementById('mensaje_usuario').value = '';
+        var loading = document.createElement("div");
+        loading.className = "dot-typing";
+        container.appendChild(loading);
+
+        var xhr = new XMLHttpRequest();
+        xhr.open('POST', chatbotUrl, true);
+        xhr.setRequestHeader('Content-Type', 'application/json;charset=UTF-8');
+        xhr.setRequestHeader('X-CSRFToken', csrfToken);
+
+        xhr.onload = function () {
+            if (xhr.status >= 200 && xhr.status < 400) {
+                var response = JSON.parse(xhr.responseText);
+                loading.remove();
+                var newDiv = document.createElement("div");
+                newDiv.className = "bubble left";
+                newDiv.innerText = response.answer;
+
+                container.appendChild(newDiv);
+
+                var whitespaceDiv = document.createElement("div");
+                whitespaceDiv.className = "whitespace2";
+                container.appendChild(whitespaceDiv);
+            }
+        };
+
+        xhr.onerror = function () {
+            console.error('Error en la solicitud al chatbot');
+        };
+        var data = JSON.stringify({ mensaje_usuario: mensaje_usuario });
+        xhr.send(data);
+    }
+}
+
+var submitButton = document.getElementById("submit-button");
+submitButton.addEventListener('click', sendQuestion);
 </script>
 
 {% if messages %}

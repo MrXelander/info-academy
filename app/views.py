@@ -1,16 +1,19 @@
-import openai
 import random
-from django.http import HttpResponseForbidden
+import transformers
+import torch
+from django.http import HttpResponseForbidden, JsonResponse
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth import logout
 from django.contrib.auth import authenticate, login as auth_login
 from django.contrib.auth.decorators import login_required, user_passes_test
 from django.contrib import messages
-from app.models import CustomUser, Materia, Tema, Subtema, SubtemaDoc, CuestionarioInicial, Evaluacion, Pregunta
+from app.models import CustomUser, Materia, Tema, Subtema, SubtemaDoc, Video, CuestionarioInicial, Evaluacion, Pregunta
 from django.contrib.auth.hashers import make_password
 from gptunam import settings
 from pytube import Search, extract
 from django.http import HttpResponse
+from django.shortcuts import render
+from transformers import AutoTokenizer
 
 version="beta(231008)"
 
@@ -374,7 +377,7 @@ def addsubtopic(request, codigo, tema_id):
         'materia': materia,
         'tema': tema,
     }
-    if request.method == 'POST':
+    '''if request.method == 'POST':
         nombre = request.POST['nombre_subtema']
         tipo = request.POST['tipo']
         descripcion = request.POST['descripcion']
@@ -431,8 +434,46 @@ def addsubtopic(request, codigo, tema_id):
                         return redirect('subjectopic', codigo=codigo)
             except Exception as e:
                 messages.add_message(request, 90, 'Error al crear actividad')
-                return redirect('subjectopic', codigo=codigo)
+                return redirect('subjectopic', codigo=codigo)'''
     return render(request, 'addsubtopic.html', context)
+
+@user_passes_test(es_profesor, login_url='login')
+def addMaterial(request, codigo, tema_id):
+    tema = get_object_or_404(Tema, id=tema_id)
+    if request.method == 'POST':
+        nombre = request.POST['nombre_subtema']
+        tipo = "Material didáctico"
+        descripcion = request.POST['descripcion']
+        uploaded_file = request.FILES.get('file')
+        try:
+            subtema = Subtema.objects.create(nombre=nombre, tema=tema, tipo=tipo, descripcion=descripcion)  
+            if uploaded_file:
+                subtema_doc = SubtemaDoc(subtema=subtema, file=uploaded_file)
+                subtema_doc.save()
+            messages.add_message(request, 70, 'Actividad creada exitosamente.')
+            return redirect('subjectopic', codigo=codigo)
+        except Exception as E:
+            messages.add_message(request, 90, 'Error al crear actividad')
+            return redirect('subjectopic', codigo=codigo)
+        
+@user_passes_test(es_profesor, login_url='login')
+def addVideo(request, codigo, tema_id):
+    tema = get_object_or_404(Tema, id=tema_id)
+    if request.method == 'POST':
+        nombre = request.POST['nombre_subtema']
+        tipo = "Video"
+        descripcion = request.POST['descripcion']
+        enlace_video = request.FILES.get('enlace_video')
+        try:
+            subtema = Subtema.objects.create(nombre=nombre, tema=tema, tipo=tipo, descripcion=descripcion)  
+            if enlace_video:
+                video_link = Video(subtema=subtema, video=enlace_video)
+                video_link.save()
+            messages.add_message(request, 70, 'Video creado exitosamente.')
+            return redirect('subjectopic', codigo=codigo)
+        except Exception as E:
+            messages.add_message(request, 90, 'Error al crear video')
+            return redirect('subjectopic', codigo=codigo)
 
 @user_passes_test(es_profesor, login_url='login')
 def edit_subtopic(request, tema_id, subtema_id):
@@ -625,40 +666,6 @@ def usersubtopics(request, materia_id, tema_id):
     }
     return render(request, 'usersubtopics.html', context)
 
-openai.api_key = settings.OPENAI_API_KEY
-
-def practice(request, materia_id, tema_id, subtema_id):
-    user = request.user
-    short_name = user.get_short_name()
-    materia = get_object_or_404(Materia, id=materia_id)
-    tema = get_object_or_404(Tema, id=tema_id)
-    subtema = get_object_or_404(Subtema, id=subtema_id)
-    entrada = "Hazme una práctica de la materia " + materia.nombre + ", del tema " + tema.nombre + ", específicamente del subtema " + subtema.nombre + ", este es de tipo " + subtema.tipo + " (práctico, teórico o mixto). El usuario también proporcionó algunos detalles que pueden ser de ayuda (no siepre los proporciona): " + subtema.descripcion + ". La práctica debe incluir los siguientes pasos: Introducción, Ejemplos, Pasos de la práctica con instalacion de librerias (en caso de ser de tipo Práctico se necesita codigo de ser necesario y en caso de ser teorico, agrega mucha más información aqui, como definiciones), y conclusión.  No olvides al final poner las fuentes o referencias, recuerda poner lo necesario porque solo limito a un maximo de 1024 tokens"
-    try:
-        response = openai.Completion.create(
-            engine="text-davinci-003",
-            prompt=entrada,
-            max_tokens=1024,
-            n=1,
-            stop=None,
-            temperature=0.5
-        )
-        response_content = response.choices[0].text
-        response_content_html = response_content.replace('\n', '<br>')
-    except openai.error.RateLimitError as e:
-        response_content = "Error de límite de uso. Por favor, inténtalo más tarde."
-        response_content_html = response_content
-    context = {
-        'materia': materia,
-        'tema': tema,
-        'short_name': short_name,
-        'subtema': subtema,
-        'response_content': response_content,
-        'response_content_html': response_content_html,
-    }
-    print(response_content)
-    return render(request, 'practice.html', context)
-
 def buscar_video(query):
     s = Search(query)
     if len(s.results) > 0:
@@ -675,6 +682,23 @@ def video(request, codigo, tema_id, subtema_id):
     materia = get_object_or_404(Materia, codigo=codigo)
     tema = get_object_or_404(Tema, id=tema_id)
     subtema = get_object_or_404(Subtema, id=subtema_id)
+    """try:
+        video = get_object_or_404(Video, subtema=subtema_id)
+        messages.add_message(request, 70, 'Video creado exitosamente.')
+        return redirect('subjectopic', codigo=codigo)
+    except Exception as E:
+        messages.add_message(request, 90, 'Error al crear video')
+        return redirect('subjectopic', codigo=codigo)
+    if video:
+        video_valor = video.video
+        print(video_valor)
+    else:
+        print("El video no fue encontrado. Mensaje personalizado aquí.")
+    video = get_object_or_404(Video, subtema=subtema_id)
+    video_valor = video.video
+    print(video_valor)
+    video_url = f"https://www.youtube.com/embed/{video_valor}
+    if not video:"""
     video_url = buscar_video(subtema.nombre + " " + tema.nombre)
 
     context = {
@@ -741,3 +765,40 @@ def evaluationq(request, codigo, tema_id, subtema_id):
         'preguntas': preguntas,
     }
     return render(request, 'evaluationq.html', context)
+
+import json
+from deep_translator import GoogleTranslator
+def chatbot_endpoint(request, tokens):
+    if request.method == 'POST':
+        #translator = GoogleTranslator(source='es', target='en')
+        body_unicode = request.body.decode('utf-8')
+        data = json.loads(body_unicode)
+        mensaje_usuario = data.get('mensaje_usuario')
+        #prompt = translator.translate(mensaje_usuario)
+
+        model = "TinyLlama/TinyLlama-1.1B-Chat-v0.6"
+        tokenizer = AutoTokenizer.from_pretrained(model)
+        pipeline = transformers.pipeline(
+            "text-generation",
+            model=model,
+            torch_dtype=torch.float32,
+            device_map="auto",
+        )
+        sequences = pipeline(
+            mensaje_usuario,
+            do_sample=True,
+            top_k=50,
+            top_p=0.9,
+            num_return_sequences=1,
+            repetition_penalty=1.1,
+            max_new_tokens=tokens,
+        )
+        response_en = ''
+        for seq in sequences:
+            response_en += seq['generated_text']
+        #translator = GoogleTranslator(source='en', target='es')
+        #response = translator.translate(response_en)
+
+        return JsonResponse({'answer': response_en})
+
+    return JsonResponse({'error': 'Método no permitido'}, status=405)

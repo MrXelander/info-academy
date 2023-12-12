@@ -64,6 +64,7 @@
             <div class="div-form">
                 <div class="div-info">
                     <h1>{{subtema.nombre}}</h1>
+                    <p>{{subtema.descripcion}}</p>
                     <div class="div-video">
                         <iframe width="900" height="507" src="{% url 'openpdf' materia.codigo tema.id subtema.id subtema_doc.id %}" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>
                     </div>
@@ -89,12 +90,6 @@ function confirmLogout() {
   // Evitar que el enlace se siga ejecutando inmediatamente
   return false;
 }
-</script>
-
-<script>
-    document.getElementById('refresh-btn').addEventListener('click', function() {
-        location.reload(); // Recarga la página
-    });
 </script>
 
 {% if messages %}

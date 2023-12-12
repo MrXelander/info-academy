@@ -29,12 +29,14 @@ urlpatterns = [
     path('<uuid:codigo>/add', views.inscripcion, name='inscripcion'),
     path('<uuid:codigo>/rm', views.baja, name='baja'),
     path('<uuid:codigo>/<int:tema_id>/add', views.addsubtopic, name='addsubtopic'),
+    path('<uuid:codigo>/<int:tema_id>/add/material', views.addMaterial, name='addmaterial'),
+    path('<uuid:codigo>/<int:tema_id>/add/video', views.addVideo, name='addvideo'),
     path('subject/<int:materia_id>/topic/<int:tema_id>/subtopic/list', views.usersubtopics, name='usersubtopics'),
-    path('subject/<int:materia_id>/topic/<int:tema_id>/subtopic/<int:subtema_id>', views.practice, name='practice'),
     path('<uuid:codigo>/<int:tema_id>/v/<int:subtema_id>', views.video, name='video'),
     path('<uuid:codigo>/<int:tema_id>/d/<int:subtema_id>', views.document, name='document'),
     path('<uuid:codigo>/<int:tema_id>/d/<int:subtema_id>/<int:doc_id>', views.openpdf, name='openpdf'),
     path('<uuid:codigo>/<int:tema_id>/e/<int:subtema_id>', views.evaluationq, name='evaluationq'),
+    path('chatbot_endpoint/<int:tokens>/', views.chatbot_endpoint, name='chatbot_endpoint'),
 ]
 
 if settings.DEBUG:

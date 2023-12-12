@@ -347,6 +347,38 @@ header{
   border-radius: 0px 0px 20px 20px;
 }
 
+.p-content{
+  margin: 0;
+}
+
+.tema{
+  margin: 0;
+  align-items: center;
+  background-color: #ffffff;
+  border: 2px solid #030303;
+  box-sizing: border-box;
+  color: #000;
+  cursor: pointer;
+  display: inline-flex;
+  fill: #000;
+  font-family: Inter,sans-serif;
+  font-size: 20px;
+  font-weight: 600;
+  height: 48px;
+  justify-content: center;
+  letter-spacing: -.8px;
+  line-height: 24px;
+  width: 100%;
+  outline: 0;
+  padding: 0 17px;
+  text-align: center;
+  text-decoration: none;
+  transition: all .3s;
+  user-select: none;
+  -webkit-user-select: none;
+  touch-action: manipulation;
+}
+
  .sidepanel {
   height: 500px;
   width: 0px;
@@ -442,6 +474,7 @@ header{
   bottom: 100px;
   left: 55px;
   overflow-x: hidden;
+  overflow-y: hidden;
   transition: 0.5s;
 }
 
@@ -449,7 +482,12 @@ header{
   display: flex;
   height: 100px;
   background-color: #000;
+}
+
+.bot-top-items{
+  display: flex; 
   align-items: center;
+  padding-top: 20px;
 }
 
 .bot-top h2{
@@ -467,8 +505,42 @@ header{
 }
 
 .bot-chat{
-  height: 500px;
+  overflow: auto;
+  height: 420px;
   background-color: #fff;
+}
+
+.whitespace2{
+  height: 10px;
+  width: 100%;
+}
+
+.response-bot{
+  background-color: aquamarine;
+  width: 70%;
+}
+
+.bot-write{
+  display: flex;
+  height: 80px;
+  background-color: #3c3939;
+}
+
+.bot-write textarea{
+  padding-top: 10px;
+  padding-left: 10px;
+  height: 60px;
+  width: 80%;
+  resize: none;
+}
+
+.bot-write button{
+  width: 15%;
+  height: 95%;
+}
+
+.bot-write button i{
+  font-size: 24px;
 }
 
 .close {
@@ -494,4 +566,81 @@ header{
 .error-no{
   width: 100%;
   text-align: center;
+}
+
+#chatbot-form{
+  display: flex;
+  width: 100%;
+  height: 100%;
+}
+
+.bubble {
+  --r: 25px; /* the radius */
+  --t: 30px; /* the size of the tail */
+  
+  max-width: 300px;
+  padding: calc(2*var(--r)/3);
+  -webkit-mask: 
+    radial-gradient(var(--t) at var(--_d) 0,#0000 98%,#000 102%) 
+      var(--_d) 100%/calc(100% - var(--r)) var(--t) no-repeat,
+    conic-gradient(at var(--r) var(--r),#000 75%,#0000 0) 
+      calc(var(--r)/-2) calc(var(--r)/-2) padding-box, 
+    radial-gradient(50% 50%,#000 98%,#0000 101%) 
+      0 0/var(--r) var(--r) space padding-box;
+  /*background: linear-gradient(135deg,#3c3939,#3c3939) border-box;
+  color: #fff;*/
+}
+.left {
+  --_d: 0%;
+  border-left: var(--t) solid #0000;
+  margin-right: var(--t);
+  place-self: start;
+  background: #000;
+  color: #fff;
+}
+.right {
+  --_d: 100%;
+  border-right: var(--t) solid #0000;
+  margin-left: var(--t);
+  place-self: end;
+  background-color: #e8e8e8;
+  color: #000;
+}
+
+.dot-typing {
+  position: relative;
+  left: -9970px;
+  margin-top: 20px;
+  margin-bottom: 20px;
+  width: 10px;
+  height: 10px;
+  border-radius: 5px;
+  background-color: #000;
+  color: #000;
+  box-shadow: 9984px 0 0 0 #000, 9999px 0 0 0 #000, 10014px 0 0 0 #000;
+  animation: dot-typing 1.5s infinite linear;
+}
+
+@keyframes dot-typing {
+  0% {
+    box-shadow: 9984px 0 0 0 #000, 9999px 0 0 0 #000, 10014px 0 0 0 #000;
+  }
+  16.667% {
+    box-shadow: 9984px -10px 0 0 #000, 9999px 0 0 0 #000, 10014px 0 0 0 #000;
+  }
+  33.333% {
+    box-shadow: 9984px 0 0 0 #000, 9999px 0 0 0 #000, 10014px 0 0 0 #000;
+  }
+  50% {
+    box-shadow: 9984px 0 0 0 #000, 9999px -10px 0 0 #000, 10014px 0 0 0 #000;
+  }
+  66.667% {
+    box-shadow: 9984px 0 0 0 #000, 9999px 0 0 0 #000, 10014px 0 0 0 #000;
+  }
+  83.333% {
+    box-shadow: 9984px 0 0 0 #000, 9999px 0 0 0 #000, 10014px -10px 0 0 #000;
+  }
+  100% {
+    box-shadow: 9984px 0 0 0 #000, 9999px 0 0 0 #000, 10014px 0 0 0 #000;
+  }
 }

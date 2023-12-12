@@ -1,4 +1,4 @@
-PROYECTO UNIVERSITARIO GPT-UNAM
+PROYECTO UNIVERSITARIO Info-Academy
 
 Consiste en realizar practicas para universitarios de la carrera de informatica y relacionadas, mediante el uso de diversas API's con Inteligencia Artificial, de manera automatizada, en donde los profesores suben los temas de cada una de sus materias, suben sus recursos adicionalmente a la plataforma y se almacenan en la base de datos.
 El proposito es solo crear practicas con introduccion, pasos, conclusiones e imagenes de referencia en pdf y diapositivas.
@@ -8,6 +8,16 @@ En caso de fallar el entorno virtual se deben instalar algunos paquetes con el s
     $ pip install -r requirements.txt
 
 -----------
+
+Para realizar una migracion correcta por primera vez:
+
+    $ python manage.py flush
+
+    $ python manage.py migrate --fake app zero
+
+    $ python manage.py migrate
+
+-----------  
 
 REGISTRO DE CAMBIOS
 
@@ -57,3 +67,11 @@ REGISTRO DE CAMBIOS
 -Se agrego una vista para el chat (aun sin funcionalidad).
 -Se agrego una encuesta inicial para entender las preferencias de aprendizaje del usuario.
 -Se planea remover la api de chatgpt para comenzar a usar llama de meta.
+
+[231212]
+-Ahora esta disponible la funcionalidad del chatbot.
+-Se corrigio el error que no permitia duplicar nombre de materias y modulos (temas).
+-Se han corregido los errores al crear subtemas.
+-Se agrego el modelo de video.
+-Se agregaron algunos campos que eran necesarios en los modelos.
+-Se actualizo el README para una correcta instalacion desde 0.
