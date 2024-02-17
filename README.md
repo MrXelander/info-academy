@@ -75,3 +75,10 @@ REGISTRO DE CAMBIOS
 -Se agrego el modelo de video.
 -Se agregaron algunos campos que eran necesarios en los modelos.
 -Se actualizo el README para una correcta instalacion desde 0.
+
+[240216]
+-Se corrigio el error que al generar un video siempre cargaba el mismo.
+-Ahora esta disponible la funcion de generacion automatica de practicas.
+-Se implemento un sistema que califica las practicas mediante CHAT GPT.
+-Se creo un modelo para guardar la APIKEY de openAI
+-Esta version sigue en Beta, pero ya se han completado las funciones de la planeacion. Con espera de reporte de bugs para ser corregidos.

@@ -1,19 +1,27 @@
 import random
 import transformers
 import torch
+import json
+import io
+from reportlab.pdfgen import canvas
 from django.http import HttpResponseForbidden, JsonResponse
 from django.shortcuts import render, redirect, get_object_or_404
+from django.db import IntegrityError
+from django.core.files.base import ContentFile
 from django.contrib.auth import logout
 from django.contrib.auth import authenticate, login as auth_login
 from django.contrib.auth.decorators import login_required, user_passes_test
 from django.contrib import messages
-from app.models import CustomUser, Materia, Tema, Subtema, SubtemaDoc, Video, CuestionarioInicial, Evaluacion, Pregunta
+from app.models import CustomUser, Materia, Tema, Subtema, SubtemaDoc, Video, CuestionarioInicial, Evaluacion, Pregunta, ApiKey
 from django.contrib.auth.hashers import make_password
 from gptunam import settings
 from pytube import Search, extract
 from django.http import HttpResponse
 from django.shortcuts import render
 from transformers import AutoTokenizer
+from deep_translator import GoogleTranslator
+from PyPDF2 import PdfReader
+from openai import OpenAI
 
 version="beta(231008)"
 
@@ -445,6 +453,7 @@ def addMaterial(request, codigo, tema_id):
         tipo = "Material didáctico"
         descripcion = request.POST['descripcion']
         uploaded_file = request.FILES.get('file')
+            
         try:
             subtema = Subtema.objects.create(nombre=nombre, tema=tema, tipo=tipo, descripcion=descripcion)  
             if uploaded_file:
@@ -766,17 +775,25 @@ def evaluationq(request, codigo, tema_id, subtema_id):
     }
     return render(request, 'evaluationq.html', context)
 
-import json
-from deep_translator import GoogleTranslator
-def chatbot_endpoint(request, tokens):
+
+def chatbot_endpoint(request, tokens, mensaje_usuario=None):
     if request.method == 'POST':
-        #translator = GoogleTranslator(source='es', target='en')
+        translator = GoogleTranslator(source='es', target='en')
         body_unicode = request.body.decode('utf-8')
         data = json.loads(body_unicode)
-        mensaje_usuario = data.get('mensaje_usuario')
-        #prompt = translator.translate(mensaje_usuario)
+        if mensaje_usuario is None:
+            mensaje_usuario = data.get('mensaje_usuario')
+        prompt = translator.translate(mensaje_usuario)
 
-        model = "TinyLlama/TinyLlama-1.1B-Chat-v0.6"
+        """
+            *Agradecimiento especial para https://huggingface.co/TinyLlama/ por el modelo preentenado
+            *Este modelo lo consideramos el mas adecuado para el proyecto debido a que no requiere
+            *Una gran cantidad de recursos para generar prompts.
+
+            *NOTA: Revisar si hay actualizaciones del modelo debido a que no se puede actualizar de manera
+            *automatica
+        """
+        model = "TinyLlama/TinyLlama-1.1B-Chat-v1.0"
         tokenizer = AutoTokenizer.from_pretrained(model)
         pipeline = transformers.pipeline(
             "text-generation",
@@ -785,7 +802,7 @@ def chatbot_endpoint(request, tokens):
             device_map="auto",
         )
         sequences = pipeline(
-            mensaje_usuario,
+            prompt,
             do_sample=True,
             top_k=50,
             top_p=0.9,
@@ -796,9 +813,126 @@ def chatbot_endpoint(request, tokens):
         response_en = ''
         for seq in sequences:
             response_en += seq['generated_text']
-        #translator = GoogleTranslator(source='en', target='es')
-        #response = translator.translate(response_en)
+        translator2 = GoogleTranslator(source='en', target='es')
+        response = translator2.translate(response_en)
 
-        return JsonResponse({'answer': response_en})
+        return JsonResponse({'answer': response})
 
     return JsonResponse({'error': 'Método no permitido'}, status=405)
+
+def generatePractice(request, tokens):
+    body_unicode = request.body.decode('utf-8')
+    data = json.loads(body_unicode)
+    tema = data.get('tema')
+    tema_id = data.get('tema_id')
+    mensajes_usuario = ["Escribe una introducción para una práctica sobre "+tema, 
+                        "Proporciona una descripción general de "+tema+" y su aplicación en el campo", 
+                        "Genera un ejemplo práctico que ilustre la aplicación de "+tema,
+                        "Describe un escenario en el que los estudiantes puedan aplicar "+tema+" de manera práctica y resuelve un problema relacionado.",
+                        "Crea un ejemplo de código que demuestre la implementación de "+tema,
+                        "Especifica un desafío de codificación y proporciona un ejemplo de solución que involucre "+tema,
+                        "Formula preguntas de comprensión para evaluar el conocimiento de los estudiantes sobre "+tema+" después de revisar la introducción y los ejemplos.",
+                        "Genera preguntas que fomenten el análisis crítico de "+tema+" y su aplicación en situaciones diversas.",
+                        "Escribe un resumen conciso de los conceptos clave abordados en la práctica sobre "+tema,
+                        "Solicita una conclusión que destaque la importancia de comprender y aplicar "+tema,
+                        "Proporciona desafíos adicionales relacionados con "+tema+" para que los estudiantes practiquen y profundicen sus conocimientos.",
+                        "Incluye problemas más avanzados que permitan a los estudiantes aplicar "+tema+" en contextos más complejos."]
+    responses = []
+
+    for mensaje_usuario in mensajes_usuario:
+        response = chatbot_endpoint(request, tokens, mensaje_usuario)
+        response_data = json.loads(response.content)
+        responses.append(response_data.get('answer', 'No hay respuesta'))
+
+    pdf_buffer = io.BytesIO()
+    pdf = canvas.Canvas(pdf_buffer, pagesize=(612, 792))  # Tamaño carta y orientación vertical
+
+    for index, respuesta in enumerate(responses, start=1):
+        if index == 1:
+            pdf.drawString(100, 800 - (index * 20), "Introducción:")
+        if index == 3:
+            pdf.drawString(100, 800 - (index * 20), "Ejemplos Prácticos:")
+        if index == 5:
+            pdf.drawString(100, 800 - (index * 20), "Ejemplo de Código:")
+        if index == 7:
+            pdf.drawString(100, 800 - (index * 20), "Preguntas de Comprensión:")
+        if index == 9:
+            pdf.drawString(100, 800 - (index * 20), "Resumen y Conclusión:")
+        if index == 11:
+            pdf.drawString(100, 800 - (index * 20), "Desafíos Adicionales:")
+        pdf.drawString(100, 780 - (index * 20), respuesta)
+        pdf.showPage()  # Finaliza la página actual
+
+    pdf.save()
+
+    temas = get_object_or_404(Tema, id=tema_id)
+    add_material_result = addMaterialInternal(tema, pdf_buffer.getvalue(), temas)
+
+    if add_material_result == 'success':
+        return JsonResponse({'answers': responses, 'add_material_status': 'success'})
+    else:
+        return JsonResponse({'error': add_material_result, 'add_material_status': 'error'})
+
+def addMaterialInternal(nombre, pdf_content, tema):
+    tipo = "Material didáctico"
+    practica = leer_pdf(ContentFile(pdf_content))
+    calificacion, feedback = evaluar_practica(practica)
+    descripcion = f"La calificación de la práctica es: {calificacion} (Fue generada con IA.)"
+    nombre_sin_espacios = nombre.replace(' ', '_')
+    try:
+        subtema = Subtema.objects.create(nombre=nombre, tema=tema, tipo=tipo, descripcion=descripcion)
+        print(f"Subtema creado: {subtema}")
+        
+        if pdf_content:
+            subtema_doc = SubtemaDoc(subtema=subtema)
+            subtema_doc.file.save(f'{nombre_sin_espacios}.pdf', ContentFile(pdf_content), save=True)
+            print(f"Documento asociado al subtema creado: {subtema_doc}")
+        
+        return 'success'
+    except IntegrityError:
+        return 'Ya existe un subtema con el mismo nombre en este tema.'
+    except Exception as e:
+        print(f'Error al crear el subtema: {str(e)}')
+        return 'error'
+    
+def apiKey(request):
+    configuracion = ApiKey.obtener_configuracion()
+
+    if request.method == 'POST':
+        nueva_key = request.POST.get('nueva_key')
+        configuracion.key = nueva_key
+        configuracion.save()
+        return redirect('dashboard') 
+
+    return render(request, 'apikey.html', {'configuracion': configuracion})
+
+def leer_pdf(archivo_pdf):
+    reader = PdfReader(archivo_pdf)
+    texto = ""
+    for pagina_num in range(len(reader.pages)):
+        pagina = reader.pages[pagina_num]
+        texto += pagina.extract_text()
+    return texto
+
+def evaluar_practica(practica):
+    configuracion = ApiKey.obtener_configuracion()
+    client = OpenAI(api_key=configuracion.key)
+    # Utiliza la API de OpenAI para generar una evaluación y obtener retroalimentación
+    prompt = f"califica práctica 1 al 10, si no es 10  solo explica que faltó:\n\"{practica}\"\nMi calificación es:"
+    response = client.completions.create(
+        #no es necesario usar el 4, el 3 es bueno para texto y mas barato
+        model="gpt-3.5-turbo-instruct",
+        prompt=prompt,
+        #80 es suficiente para una buena retroalimentacion pero se pone 2 solo para la calificacion
+        max_tokens=2,
+        #la temperatura se refiere a la posibilidad de que la respuesta sea siempre diferente, en este caso si 2 responden igual querriamos que la calificacion sea la misma. Entonces más bajo es mejor
+        temperature=0.4,
+        stop=["\n"]
+    )
+
+    # Extrae la calificación y la retroalimentación de la respuesta
+    result = response.choices[0].text.strip().split("\n")
+    rating = result[0]
+    feedback = result[1] if len(result) > 1 else "No se proporcionó retroalimentación."
+
+    return rating, feedback

@@ -30,6 +30,7 @@
                         <option value="2">Cuestionario</option>
                         <option value="3">Proyecto</option>
                         <option value="4">Video</option>
+                        <option value="5">Generar Practica IA (beta)</option>
                     </select>
                     <form action="{% url 'addmaterial' materia.codigo tema.id %}" method="post" id="material_didactico" enctype="multipart/form-data">
                         {% csrf_token %}
@@ -41,11 +42,15 @@
                                 <textarea class="input" id="descripcion" type="text" name="descripcion">Descripción</textarea>                  
                             </div>
                             <div class="ln-1">
-                                <input type="file" name="file" accept="application/pdf,application/vnd.ms-excel,application/msword">
+                                <input type="file" name="file" id="file" accept="application/pdf,application/vnd.ms-excel,application/msword">
+                            </div>
+                            <div class="checkbox-wrapper-41 ln-2">
+                                <label class="switchtxt" for="generar">Generar automaticamente</label>
+                                <input type="checkbox" id="generar" name="generar">
                             </div>
                             <div class="ln-1">
                                 <a href="{% url 'subjectopic' materia.codigo %}" class="cancelar">REGRESAR</a>
-                                <button class="registro">CREAR</button>
+                                <button class="registro" type="submit">CREAR</button>
                             </div>
                         </div>
                     </form>
@@ -111,7 +116,29 @@
                                 <button class="registro">CREAR</button>
                             </div>
                         </div>
-                    </form>              
+                    </form>  
+                    <form id="material_ia" method="post" style="display: none;">
+                        {% csrf_token %}
+                        <div class="formulario-container">
+                            <div class="ln-1">
+                                <input class="input" id="nombre_subtemam" type="text" name="nombre_subtemam" placeholder="Nombre" required>
+                            </div>
+                            <div class="ln-1">
+                                <a href="{% url 'subjectopic' materia.codigo %}" class="cancelar" id="cancelar">REGRESAR</a>
+                                <button type="button" class="registro" id="registrom">CREAR</button>
+                            </div>
+                            <div class="ln-1" id="loader" style="display: none;">
+                                <div class="lds-facebook" id="cargador"><div></div><div></div><div></div></div>
+                                <p style="font-size: 24px;">No cierre esta ventana hasta que se genere la práctica</p>
+                            </div>
+                            <div class="ln-1" id="successfully" style="display: none;">
+                                <div class="success-animation">
+                                    <svg class="checkmark" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 52 52"><circle class="checkmark__circle" cx="26" cy="26" r="25" fill="none" /><path class="checkmark__check" fill="none" d="M14.1 27.2l7.1 7.2 16.7-16.8" /></svg>
+                                    <p style="font-size: 24px;">Practica Creada Exitosamente!!!</p>
+                                </div>
+                            </div>
+                        </div>
+                    </form>            
                 </div>                
             </div>
         </div>       
@@ -129,12 +156,17 @@
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script>
     $(document).ready(function() {
+        $('#generar').change(function() {
+            $('#file').prop('disabled', this.checked);
+        });
+
         $("#tipo").change(function() {
             var selectedOption = $(this).val();
             $("#material_didactico").hide();
             $("#proyecto").hide();
             $("#cuestionario").hide();
             $("#video").hide();
+            $("#material_ia").hide();
             
             if (selectedOption === "1") {
                 $("#material_didactico").show();
@@ -144,6 +176,8 @@
                 $("#proyecto").show();
             } else if (selectedOption === "4") {
                 $("#video").show();
+            } else if (selectedOption === "5") {
+                $("#material_ia").show();
             }
         });
     
@@ -165,5 +199,75 @@
         $("#preguntas_cuestionario").on("click", ".eliminar_pregunta", function() {
             $(this).parent().remove();
         });
+
+        $("#registrom").click(function(){
+            var csrfToken = document.getElementsByName("csrfmiddlewaretoken")[0].value;
+            var tema = $("#nombre_subtemam").val();
+            var tema_id = '{{ tema.id }}'
+            if (isEmpty(tema)){
+                alert("Por favor llene los campos necesarios");
+            }else{
+                $("#loader").show();
+                $("#registrom").hide();
+                $("#cancelar").hide();
+                
+                var url = "{% url 'generate_practice' 128 %}";
+
+                var xhr = new XMLHttpRequest();
+                xhr.open('POST', url, true);
+                xhr.setRequestHeader('Content-Type', 'application/json;charset=UTF-8');
+                xhr.setRequestHeader('X-CSRFToken', csrfToken);
+
+                xhr.onload = function () {
+                    if (xhr.status >= 200 && xhr.status < 400) {
+                        var response = JSON.parse(xhr.responseText);
+                        $("#loader").hide();
+                        $("#successfully").show();
+                        console.log(response.answers);
+                        $("#textoPractica").text = response.answers;
+                    }
+                };
+
+                xhr.onerror = function () {
+                    console.error('Error en la solicitud al chatbot');
+                };
+                var data = JSON.stringify({ tema: tema, tema_id: tema_id });
+                xhr.send(data);
+            }
+        });
+        /*$("#registrom").click(function(){
+            var csrfToken = document.getElementsByName("csrfmiddlewaretoken")[0].value;
+            var generate = $("#generar").prop("checked") ? 1 : 0;
+            var subtema = $("#nombre_subtemam").val();
+            if (subtema){
+                var form_data = new FormData($('#material_didactico')[0]);
+                var codigo = '{{ materia.codigo }}';
+                var tema_id = '{{ tema.id }}';
+                if (generate==1){
+                    alert("xd");
+                }else{
+                    $.ajax({
+                        url: "/" + codigo + "/" + tema_id + "/add/material",
+                        type: 'post',
+                        data: form_data,
+                        processData: false,
+                        contentType: false,
+                        success: function(data) {
+                            console.log(data);
+                        },
+                        error: function(error) {
+                            console.log('Error en la solicitud AJAX:', error);
+                        }
+                    });
+                }
+            }else{
+                alert("Por favor llene los campos necesarios");
+            }
+        });*/
     });
+
+function isEmpty(str) {
+    return (!str || str.trim().length === 0);
+}
+
 </script>    

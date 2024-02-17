@@ -37,6 +37,8 @@ urlpatterns = [
     path('<uuid:codigo>/<int:tema_id>/d/<int:subtema_id>/<int:doc_id>', views.openpdf, name='openpdf'),
     path('<uuid:codigo>/<int:tema_id>/e/<int:subtema_id>', views.evaluationq, name='evaluationq'),
     path('chatbot_endpoint/<int:tokens>/', views.chatbot_endpoint, name='chatbot_endpoint'),
+    path('generate_practice/<int:tokens>/', views.generatePractice, name='generate_practice'),
+    path('apikey', views.apiKey, name='apikey')
 ]
 
 if settings.DEBUG:

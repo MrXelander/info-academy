@@ -150,3 +150,21 @@ class RegistroTiempo(models.Model):
 
     def __str__(self):
         return f"Registro de tiempo para {self.alumno} en {self.subtema}"
+    
+class ApiKey(models.Model):
+    key = models.CharField(max_length=255, unique=True)
+
+    @classmethod
+    def obtener_configuracion(cls):
+        # Intenta obtener el único objeto Configuracion, y si no existe, créalo
+        configuracion, creado = cls.objects.get_or_create(defaults={'key': 'default_key'})
+        
+        # Si fue creado, actualiza la key para garantizar que sea única
+        if creado:
+            configuracion.key = f"default_key_{configuracion.id}"
+            configuracion.save()
+
+        return configuracion
+
+    def __str__(self):
+        return self.key

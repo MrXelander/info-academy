@@ -97,7 +97,7 @@ function confirmLogout() {
 
 <script>
     document.getElementById('refresh-btn').addEventListener('click', function() {
-        location.reload(); // Recarga la página
+        window.location.reload(true); // Recarga la página y borra la cache para que no cargue el mismo video
     });
 </script>
 

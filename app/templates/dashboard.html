@@ -225,6 +225,8 @@ function isEmpty(str) {
 function sendQuestion() {
     var mensaje_usuario = document.getElementById("mensaje_usuario").value;
     if(!isEmpty(mensaje_usuario)){
+        document.getElementById("mensaje_usuario").disabled = true;
+        document.getElementById("submit-button").disabled = true;
         var chatbotUrl = "{% url 'chatbot_endpoint' 128 %}";
         var csrfToken = document.getElementsByName("csrfmiddlewaretoken")[0].value;
         var container = document.getElementById("bot-chat");
@@ -266,6 +268,8 @@ function sendQuestion() {
         };
         var data = JSON.stringify({ mensaje_usuario: mensaje_usuario });
         xhr.send(data);
+        document.getElementById("mensaje_usuario").disabled = false;
+        document.getElementById("submit-button").disabled = false;
     }
 }
 

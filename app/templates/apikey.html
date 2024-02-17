@@ -1,0 +1,8 @@
+{% load static %}
+<!-- cambiar_key.html -->
+<form method="post">
+    {% csrf_token %}
+    <label for="nueva_key">Nueva Clave:</label>
+    <input type="text" name="nueva_key" value="{{ configuracion.key }}" required>
+    <button type="submit">Guardar</button>
+</form>
