@@ -82,3 +82,8 @@ REGISTRO DE CAMBIOS
 -Se implemento un sistema que califica las practicas mediante CHAT GPT.
 -Se creo un modelo para guardar la APIKEY de openAI
 -Esta version sigue en Beta, pero ya se han completado las funciones de la planeacion. Con espera de reporte de bugs para ser corregidos.
+
+[250210]
+-Se corrigio el problema de acomodo de informacion de las practicas en PDF.
+-Se actualizaron las versiones de las librerias necesarias en requirements.txt.
+-Se agrego un codigo para que el modelo de I.A detecte si hay GPU en el host y determine si usarlo con CPU o GPU.
