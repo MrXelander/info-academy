@@ -3,7 +3,10 @@ import transformers
 import torch
 import json
 import io
-from reportlab.pdfgen import canvas
+from reportlab.lib.pagesizes import letter
+from reportlab.platypus import SimpleDocTemplate, Paragraph
+from reportlab.lib.styles import getSampleStyleSheet
+from reportlab.lib.enums import TA_CENTER
 from django.http import HttpResponseForbidden, JsonResponse
 from django.shortcuts import render, redirect, get_object_or_404
 from django.db import IntegrityError
@@ -18,12 +21,12 @@ from gptunam import settings
 from pytube import Search, extract
 from django.http import HttpResponse
 from django.shortcuts import render
-from transformers import AutoTokenizer
+from transformers import AutoTokenizer, AutoModelForCausalLM, pipeline
 from deep_translator import GoogleTranslator
 from PyPDF2 import PdfReader
 from openai import OpenAI
 
-version="beta(231008)"
+version="beta(250210)"
 
 def index(request):
     if request.user.is_authenticated:
@@ -793,13 +796,25 @@ def chatbot_endpoint(request, tokens, mensaje_usuario=None):
             *NOTA: Revisar si hay actualizaciones del modelo debido a que no se puede actualizar de manera
             *automatica
         """
-        model = "TinyLlama/TinyLlama-1.1B-Chat-v1.0"
-        tokenizer = AutoTokenizer.from_pretrained(model)
+        model_name = "TinyLlama/TinyLlama-1.1B-Chat-v1.0"
+
+        if torch.cuda.is_available():
+            device = torch.device("cuda:0")
+            print("Se utilizará la GPU")
+        else:
+            device = torch.device("cpu")
+            print("Se utilizará la CPU")
+
+        tokenizer = AutoTokenizer.from_pretrained(model_name)
+        model = AutoModelForCausalLM.from_pretrained(model_name, torch_dtype=torch.bfloat16)
+        model.to(device)
         pipeline = transformers.pipeline(
             "text-generation",
             model=model,
-            torch_dtype=torch.float32,
-            device_map="auto",
+            tokenizer=tokenizer,
+            torch_dtype=torch.bfloat16,
+            trust_remote_code=True,
+            device=device,
         )
         sequences = pipeline(
             prompt,
@@ -845,25 +860,41 @@ def generatePractice(request, tokens):
         responses.append(response_data.get('answer', 'No hay respuesta'))
 
     pdf_buffer = io.BytesIO()
-    pdf = canvas.Canvas(pdf_buffer, pagesize=(612, 792))  # Tamaño carta y orientación vertical
+    pdf = SimpleDocTemplate(pdf_buffer, pagesize=letter)
+    elements = []
+
+    styles = getSampleStyleSheet()
+    style_centered = styles["Heading1"]  # Puedes usar otro estilo de encabezado
+    style_centered.alignment = TA_CENTER  # Centrar el texto
+    style_centered.fontSize = 14 # Ajusta tamaño de letra
+    style_centered.leading = 16 # Ajusta espaciado entre líneas
+    style = styles["Normal"] # Estilo normal para el texto
+    style.fontSize = 12 # Ajusta tamaño de letra
+    style.leading = 14 # Ajusta espaciado entre líneas
 
     for index, respuesta in enumerate(responses, start=1):
-        if index == 1:
-            pdf.drawString(100, 800 - (index * 20), "Introducción:")
-        if index == 3:
-            pdf.drawString(100, 800 - (index * 20), "Ejemplos Prácticos:")
-        if index == 5:
-            pdf.drawString(100, 800 - (index * 20), "Ejemplo de Código:")
-        if index == 7:
-            pdf.drawString(100, 800 - (index * 20), "Preguntas de Comprensión:")
-        if index == 9:
-            pdf.drawString(100, 800 - (index * 20), "Resumen y Conclusión:")
-        if index == 11:
-            pdf.drawString(100, 800 - (index * 20), "Desafíos Adicionales:")
-        pdf.drawString(100, 780 - (index * 20), respuesta)
-        pdf.showPage()  # Finaliza la página actual
 
-    pdf.save()
+        title_text = ""
+        if index == 1:
+            title_text = "Introducción:"
+        if index == 3:
+            title_text = "Ejemplos Prácticos:"
+        if index == 5:
+            title_text = "Ejemplo de Código:"
+        if index == 7:
+            title_text = "Preguntas de Comprensión:"
+        if index == 9:
+            title_text = "Resumen y Conclusión:"
+        if index == 11:
+           title_text = "Desafíos Adicionales:"
+
+        p_title = Paragraph(title_text, style_centered) # Correcto
+        elements.append(p_title)
+        p = Paragraph(respuesta, style) # Correcto
+        p.wrapOn(pdf, 500, 800)
+        elements.append(p)
+
+    pdf.build(elements)
 
     temas = get_object_or_404(Tema, id=tema_id)
     add_material_result = addMaterialInternal(tema, pdf_buffer.getvalue(), temas)
@@ -876,8 +907,9 @@ def generatePractice(request, tokens):
 def addMaterialInternal(nombre, pdf_content, tema):
     tipo = "Material didáctico"
     practica = leer_pdf(ContentFile(pdf_content))
-    calificacion, feedback = evaluar_practica(practica)
-    descripcion = f"La calificación de la práctica es: {calificacion} (Fue generada con IA.)"
+    #calificacion, feedback = evaluar_practica(practica)
+    #descripcion = f"La calificación de la práctica es: {calificacion} (Fue generada con IA.)"
+    descripcion = "prueba"
     nombre_sin_espacios = nombre.replace(' ', '_')
     try:
         subtema = Subtema.objects.create(nombre=nombre, tema=tema, tipo=tipo, descripcion=descripcion)
